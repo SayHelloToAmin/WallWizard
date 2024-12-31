@@ -1,9 +1,9 @@
 import json
-from signupandlogin import login , sign_up
-# import re
+import re
 import uuid
-# import bcrypt
+import bcrypt
 import time
+import os
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -13,6 +13,9 @@ user_file = 'users.json'
 games_file = 'games_data.json'
 
 console = Console()
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def save_game(game_data):
     try:
@@ -73,8 +76,8 @@ def display_menu():
     console.print(table)
 
 
-
 def display_game_history(user):
+    clear_screen()
     user_games = list_games(user['username'])
     if not user_games:
         console.print(Panel("No history found!", style="bold red"))
@@ -91,6 +94,7 @@ def display_game_history(user):
     console.print(table)
 
 def display_leaderboard():
+    clear_screen()
     try:
         with open(games_file, 'r') as file:
             games = json.load(file)
@@ -147,6 +151,7 @@ def display_leaderboard():
     console.print(table)
 
 def start_new_game(user):
+    clear_screen()
     console.print(Panel("Starting a new game...", style="bold magenta"))
 
     player1_position = (0, 0)
@@ -178,11 +183,11 @@ def start_new_game(user):
     console.print(Panel(f"Game {game_id} saved and exited!", style="green"))
 
 def continue_game(user):
+    clear_screen()
     console.print(Panel("Continuing a previous game...", style="bold magenta"))
 
 def menu(user):
     while True:
-        print("\n")
         display_menu()
         console.print("\nSelect an option:", style="bold underline white")
         choice = input()
@@ -196,20 +201,177 @@ def menu(user):
         elif choice == '4':
             display_leaderboard()
         elif choice == '5':
-            console.print(Panel("Logging out...", style="bold magenta"))
+            clear_screen()
             break
         else:
             console.print(Panel("Invalid option! Please choose an option from 1 to 5", style="bold red"))
 
+def check_user(username):
+    try:
+        with open(user_file, 'r') as file:
+            users = json.load(file)
+            for user in users:
+                if user['username'] == username:
+                    return user
+    except FileNotFoundError:
+        return None
+    
+
+def user_exists(username, email=None):
+    try:
+        with open(user_file, 'r') as file:
+            users = json.load(file)
+            for user in users:
+                if (user['username'] == username) or (email and user['email'] == email):
+                    return True
+    except FileNotFoundError:
+        return False
+    return False
+
+def check_password(hash_pass , password):
+    return bcrypt.checkpw(password.encode('utf-8'), hash_pass.encode('utf-8'))
+
+def check_email(email):
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(email_regex, email) is not None
+
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
+
+def save_user(user_data):
+    try:
+        with open(user_file, 'r') as file:
+            users = json.load(file)
+    except FileNotFoundError:
+        users = []
+
+    users.append(user_data)
+
+    with open(user_file, 'w') as file:
+        json.dump(users, file, indent=4)
+
+def sign_up():
+    clear_screen()
+    console.print(Panel("*Sign up*", style="bold italic yellow"))
+    while True:
+        console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
+        choice = input()
+        if choice.lower() == 'b':
+            clear_screen()
+            return
+            
+        clear_screen()
+            
+        console.print("Username (Enter 'b' to go back to the main): ", style="bold white")
+        username = input()
+        if username.lower() == "b":
+            clear_screen()
+            return
+        if user_exists(username):
+            clear_screen()
+            console.print(Panel("Username or email has already been used!", style="bold red"))
+        else:
+            break
+
+    clear_screen()
+
+    while True:
+        console.print("Password (at least 8 characters, Enter 'b' to go back to the main): ", style="bold white")
+        password = input()
+        if password.lower() == "b":
+            clear_screen()
+            return
+        if len(password) < 8:
+            clear_screen()
+            console.print(Panel("Password must contain at least 8 characters!", style="bold red"))
+        else:
+            break
+
+    clear_screen()
+
+    while True:
+        console.print("Email (Enter 'b' to go back to the main): ", style="bold white")
+        email = input()
+        if email.lower() == "b":
+            clear_screen()
+            return
+        if not check_email(email):
+            clear_screen()
+            console.print(Panel("Email is not valid! Please try again.", style="bold red"))
+        elif user_exists(username, email):
+            clear_screen() 
+            console.print(Panel("Email is already been used! Please enter a different email.", style="bold red"))
+        else:
+            break
+
+    clear_screen()
+
+    user_id = str(uuid.uuid4())
+    hashed_password = hash_password(password)
+
+    user_data = {
+            'id': user_id,
+            'username': username,
+            'password': hashed_password,
+            'email': email
+        }
+
+    save_user(user_data)
+    console.print(Panel("Sign up was successful!", style="bold green"))
+
+
+def login():
+    clear_screen()
+    console.print(Panel("*Login*", style="bold italic yellow"))
+    while True:
+        console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
+        choice = input()
+        if choice.lower() == 'b':
+            clear_screen()
+            return
+        
+        clear_screen()
+
+        console.print("Username (Enter 'b' to go back to the main): ", style="bold white")
+        username = input()
+        if username.lower() == "b":
+            clear_screen()
+            return
+        user = check_user(username)
+
+        if not user:
+            clear_screen()
+            console.print(Panel("Username not found! Please try again.", style="bold red"))
+            continue
+        else:
+            clear_screen()
+            break
+
+    while True:
+        console.print("Password (Enter 'b' to go back to the main): ", style="bold white")
+        password = input()
+        if password.lower() == "b":
+            clear_screen()
+            return
+        if check_password(user['password'], password):
+            clear_screen()
+            console.print(Panel("Login successful!", style="bold green"))
+            return user
+        else:
+            clear_screen()
+            console.print(Panel("Password is incorrect! Please try again.", style="bold red"))
+
 def main():
     while True:
         panel = Panel(
-    "[bold white]*** Welcome to WallWizard Game ***[/bold white]",
-    title="[bold cyan]🎮 WallWizard 🎮[/bold cyan]",
-    subtitle="[italic bold magenta]Let the magic begin![/italic bold magenta]",
-    border_style="cyan",
-    padding=(1, 2),
-)
+            "[bold white]*** Welcome to WallWizard Game ***[/bold white]",
+            title="[bold cyan]🎮 WallWizard 🎮[/bold cyan]",
+            subtitle="[italic bold magenta]Let the magic begin![/italic bold magenta]",
+            border_style="cyan",
+            padding=(1, 2),
+        )
 
         console.print(panel, "\n")
         console.print(Panel("1) Sign up", border_style="cyan", style="italic bold white"))
@@ -225,7 +387,6 @@ def main():
                 menu(user)
         else:
             console.print(Panel("Invalid option! Please try again.", style="bold red"))
-
 
 if __name__ == "__main__":
     main()
