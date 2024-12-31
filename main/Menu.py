@@ -38,22 +38,24 @@ def list_games(username):
         return []
 
 def display_menu():
-    table = Table(title="Main Menu")
-    table.add_column("Option", style="bold black on white", justify="center")
-    table.add_column("Description", style=" bold italic underline black on white")
+    table = Table(title="🔵Main Menu🔵",
+                  title_style="bold black on white",
+                  show_lines=True)
+    table.add_column("Option", style="bold black", justify="center")
+    table.add_column("Title", style=" bold italic white")
 
-    table.add_row("1" , "Start New Game")
-    table.add_row("2" , "Continue Previous Game")
-    table.add_row("3" , "View Game History")
-    table.add_row("4" , "View Leaderboard")
-    table.add_row("5" , "Logout")
+    table.add_row(":one:", "Start New Game")
+    table.add_row(":two:", "Continue Previous Game")
+    table.add_row(":three:", "View Game History")
+    table.add_row(":four:", "View Leaderboard")
+    table.add_row(":five:", "logout")
 
     console.print(table)
 
 def display_game_history(user):
     user_games = list_games(user['username'])
     if not user_games:
-        console.print(Panel("No history found!", style="red"))
+        console.print(Panel("No history found!", style="bold red"))
         return
 
     table = Table(title="Game History", show_lines=True)
@@ -71,7 +73,7 @@ def display_leaderboard():
         with open(games_file, 'r') as file:
             games = json.load(file)
     except FileNotFoundError:
-        console.print(Panel("No results found!", style="red"))
+        console.print(Panel("No results found!", style="bold red"))
         return
 
     leaderboard = {}
@@ -123,7 +125,7 @@ def display_leaderboard():
     console.print(table)
 
 def start_new_game(user):
-    console.print(Panel("Starting a new game...", style="green"))
+    console.print(Panel("Starting a new game...", style="bold magenta"))
 
     player1_position = (0, 0)
     player2_position = (5, 5)
@@ -154,12 +156,13 @@ def start_new_game(user):
     console.print(Panel(f"Game {game_id} saved and exited!", style="green"))
 
 def continue_game(user):
-    console.print(Panel("Continuing a previous game...", style="green"))
+    console.print(Panel("Continuing a previous game...", style="bold magenta"))
 
 def menu(user):
     while True:
         display_menu()
-        choice = input("Choose an option: ")
+        console.print("Choose an option: ", style="bold white")
+        choice = input()
 
         if choice == '1':
             start_new_game(user)
@@ -170,10 +173,10 @@ def menu(user):
         elif choice == '4':
             display_leaderboard()
         elif choice == '5':
-            console.print(Panel("Logging out...", style="yellow"))
+            console.print(Panel("Logging out...", style="bold magenta"))
             break
         else:
-            console.print(Panel("Invalid option!", style="red"))
+            console.print(Panel("Invalid option! Please choose an option from 1 to 5", style="bold red"))
 
 def main():
     while True:
