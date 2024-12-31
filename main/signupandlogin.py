@@ -74,33 +74,40 @@ def save_user(user_data):
 
 # Sign-Up Function
 def sign_up():
+    print("\n")
     console.print(Panel("*Sign up*", style="bold italic yellow"))
 
     while True:
-        console.print("Enter 'b' to go back to the main or continue.\nChoose an option: ", style="bold white")
+        console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
         choice = input()
         if choice.lower() == 'b':
             return
         
 
-        console.print("Username: ", style="bold white")
+        console.print("Username (Enter 'b' to go back to the main): ", style="bold white")
         username = input()
+        if username.lower() == "b":
+            return
         if user_exists(username):  # exist => True, not exist => False
             console.print(Panel("Username or email has already been used!", style="bold red"))
         else:
             break
 
     while True:
-        console.print("Password (at least 8 characters): ", style="bold white")
+        console.print("Password (at least 8 characters, Enter 'b' to go back to the main): ", style="bold white")
         password = input()
+        if password.lower() == "b":
+            return
         if len(password) < 8:
             console.print(Panel("Password must contain at least 8 characters!", style="bold red"))
         else:
             break
 
     while True:
-        console.print("Email: ", style="bold white")
+        console.print("Email (Enter 'b' to go back to the main): ", style="bold white")
         email = input()
+        if email.lower() == "b":
+            return
         if not check_email(email):  # valid => True, not valid => False
             console.print(Panel("Email is not valid! Please try again.", style="bold red"))
         elif user_exists(username, email): 
@@ -128,14 +135,17 @@ def sign_up():
 
 #Login Function
 def login():
-    console.print(Panel("Login", style="bold italic yellow"))
+    print("\n")
+    console.print(Panel("*Login*", style="bold italic yellow"))
     while True:
-        console.print("Enter 'b' to go back to the main or continue.\nChoose an option: ", style="bold white")
+        console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
         choice = input()
         if choice.lower() == 'b':
             return
-        console.print("Username: ", style="bold white")
+        console.print("Username (Enter 'b' to go back to the main): ", style="bold white")
         username = input()
+        if username.lower() == "b":
+            return
         user = check_user(username)
 
         if not user:
@@ -145,8 +155,10 @@ def login():
             break
 
     while True:
-        console.print("Password: ", style="bold white")
+        console.print("Password (Enter 'b' to go back to the main): ", style="bold white")
         password = input()
+        if password.lower() == "b":
+            return
         if check_password(user['password'], password):
             console.print(Panel("Login successful!", style="bold green"))
             return user

@@ -7,6 +7,7 @@ import time
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
+from rich.box import ROUNDED
 from rich.prompt import Prompt
 from rich.layout import Layout
 
@@ -37,20 +38,43 @@ def list_games(username):
     except FileNotFoundError:
         return []
 
-def display_menu():
-    table = Table(title="🔵Main Menu🔵",
-                  title_style="bold black on white",
-                  show_lines=True)
-    table.add_column("Option", style="bold black", justify="center")
-    table.add_column("Title", style=" bold italic white")
 
-    table.add_row(":one:", "Start New Game")
-    table.add_row(":two:", "Continue Previous Game")
-    table.add_row(":three:", "View Game History")
-    table.add_row(":four:", "View Leaderboard")
-    table.add_row(":five:", "logout")
+def display_menu():
+    table = Table(
+        title="[bold cyan]🎮 Main Menu 🎮[/bold cyan]",
+        title_style="bold black on white",
+        show_lines=True,
+        header_style="bold magenta",
+        box=ROUNDED
+    )
+
+    table.add_column("[bold magenta]Option[/bold magenta]", justify="center")
+    table.add_column("[bold magenta]Title[/bold magenta]", style="bold white")
+
+    table.add_row(
+        "[bold cyan]:one:",
+        "[bold white]Start New Game[/bold white]",
+    )
+    table.add_row(
+        "[bold cyan]:two:",
+        "[bold white]Continue Previous Game[/bold white]",
+    )
+    table.add_row(
+        "[bold cyan]:three:",
+        "[bold white]View Game History[/bold white]",
+    )
+    table.add_row(
+        "[bold cyan]:four:",
+        "[bold white]View Leaderboard[/bold white]",
+    )
+    table.add_row(
+        "[bold cyan]:five:",
+        "[bold white]Logout[/bold white]",
+    )
 
     console.print(table)
+
+
 
 def display_game_history(user):
     user_games = list_games(user['username'])
@@ -160,8 +184,9 @@ def continue_game(user):
 
 def menu(user):
     while True:
+        print("\n")
         display_menu()
-        console.print("Choose an option: ", style="bold white")
+        console.print("\nSelect an option:", style="bold underline white")
         choice = input()
 
         if choice == '1':
@@ -180,11 +205,19 @@ def menu(user):
 
 def main():
     while True:
-        console.print(Panel("*** Welcome to WallWizard game ***", style="bold black on white"))
-        console.print("\n1) Sign up", style="italic bold bright_white")
-        console.print("2) Log in", style="italic bold bright_white")
-        console.print("\nChoose an option (1 or 2)", style="bold white")
-        choice = Prompt.ask()
+        panel = Panel(
+    "[bold white]*** Welcome to WallWizard Game ***[/bold white]",
+    title="[bold cyan]🎮 WallWizard 🎮[/bold cyan]",
+    subtitle="[italic bold magenta]Let the magic begin![/italic bold magenta]",
+    border_style="cyan",
+    padding=(1, 2),
+)
+
+        console.print(panel, "\n")
+        console.print(Panel("1) Sign up", border_style="cyan", style="italic bold white"))
+        console.print(Panel("2) Log in", border_style="cyan", style="italic bold white"))
+        console.print("\nChoose an option (1 or 2):", style="bold underline white")
+        choice = input()
 
         if choice == '1':
             sign_up()
