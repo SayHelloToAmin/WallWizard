@@ -1,7 +1,8 @@
 import json
-import re
+from signupandlogin import login , sign_up
+# import re
 import uuid
-import bcrypt
+# import bcrypt
 import time
 from rich.console import Console
 from rich.table import Table
@@ -13,46 +14,6 @@ user_file = 'users.json'
 games_file = 'games_data.json'
 
 console = Console()
-
-def check_email(email):
-    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-    return re.match(email_regex, email) is not None
-
-
-def user_exists(username, email=None):
-    try:
-        with open(user_file, 'r') as file:
-            users = json.load(file)
-            for user in users:
-                if (user['username'] == username) or (email and user['email'] == email):
-                    return True
-    except FileNotFoundError:
-        return False
-    return False
-
-
-def check_user(username):
-    try:
-        with open(user_file, 'r') as file:
-            users = json.load(file)
-            for user in users:
-                if user['username'] == username:
-                    return user
-    except FileNotFoundError:
-        return None
-
-
-def save_user(user_data):
-    try:
-        with open(user_file, 'r') as file:
-            users = json.load(file)
-    except FileNotFoundError:
-        users = []
-
-    users.append(user_data)
-
-    with open(user_file, 'w') as file:
-        json.dump(users, file, indent=4)
 
 def save_game(game_data):
     try:
@@ -66,13 +27,6 @@ def save_game(game_data):
     with open(games_file, 'w') as file:
         json.dump(games, file, indent=4)
 
-def hash_password(password):
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed.decode('utf-8')
-
-def check_password(hash_pass, password):
-    return bcrypt.checkpw(password.encode('utf-8'), hash_pass.encode('utf-8'))
 
 def list_games(username):
     try:
@@ -88,11 +42,11 @@ def display_menu():
     table.add_column("Option", style="bold black on white", justify="center")
     table.add_column("Description", style=" bold italic underline black on white")
 
-    table.add_row("1", "Start New Game")
-    table.add_row("2", "Continue Previous Game")
-    table.add_row("3", "View Game History")
-    table.add_row("4", "View Leaderboard")
-    table.add_row("5", "Logout")
+    table.add_row("1" , "Start New Game")
+    table.add_row("2" , "Continue Previous Game")
+    table.add_row("3" , "View Game History")
+    table.add_row("4" , "View Leaderboard")
+    table.add_row("5" , "Logout")
 
     console.print(table)
 
@@ -167,81 +121,6 @@ def display_leaderboard():
         table.add_row(str(idx + 1), player['username'], str(player['wins']), str(player['losses']), str(player['total_time']))
 
     console.print(table)
-
-def sign_up():
-    console.print(Panel("*Sign up*", style="bold italic yellow"))
-
-    while True:
-        console.print("Enter 'b' to go back to the main or continue.\nChoose an option: ", style="bold white")
-        choice = input()
-        if choice.lower() == 'b':
-            return
-        
-
-        console.print("Username: ", style="bold white")
-        username = input()
-        if user_exists(username):  # exist => True, not exist => False
-            console.print(Panel("Username or email has already been used!", style="bold red"))
-        else:
-            break
-
-    while True:
-        console.print("Password (at least 8 characters): ", style="bold white")
-        password = input()
-        if len(password) < 8:
-            console.print(Panel("Password must contain at least 8 characters!", style="bold red"))
-        else:
-            break
-
-    while True:
-        console.print("Email: ", style="bold white")
-        email = input()
-        if not check_email(email):  # valid => True, not valid => False
-            console.print(Panel("Email is not valid! Please try again.", style="bold red"))
-        elif user_exists(username, email): 
-            console.print(Panel("Email is already been used! Please enter a different email.", style="bold red"))
-        else:
-            break
-
-    user_id = str(uuid.uuid4())
-    hashed_password = hash_password(password)
-
-    user_data = {
-        'id': user_id,
-        'username': username,
-        'password': hashed_password,
-        'email': email
-    }
-
-    save_user(user_data)
-    console.print(Panel("Sign up was successful!", style="bold green"))
-
-def login():
-    console.print(Panel("Login", style="bold italic yellow"))
-    while True:
-        console.print("Enter 'b' to go back to the main or continue.\nChoose an option: ", style="bold white")
-        choice = input()
-        if choice.lower() == 'b':
-            return
-        console.print("Username: ", style="bold white")
-        username = input()
-        user = check_user(username)
-
-        if not user:
-            console.print(Panel("Username not found! Please try again.", style="bold red"))
-            continue
-        else:
-            break
-
-    while True:
-        console.print("Password: ", style="bold white")
-        password = input()
-        if check_password(user['password'], password):
-            console.print(Panel("Login successful!", style="bold green"))
-            return user
-        else:
-            console.print(Panel("Password is incorrect! Please try again.", style="bold red"))
-
 
 def start_new_game(user):
     console.print(Panel("Starting a new game...", style="green"))
