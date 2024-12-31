@@ -202,6 +202,7 @@ def menu(user):
             display_leaderboard()
         elif choice == '5':
             clear_screen()
+            console.print(Panel("Logging out...", style="bold italic yellow"))
             break
         else:
             console.print(Panel("Invalid option! Please choose an option from 1 to 5", style="bold red"))
@@ -254,7 +255,7 @@ def save_user(user_data):
 
 def sign_up():
     clear_screen()
-    console.print(Panel("*Sign up*", style="bold italic yellow"))
+    console.print(Panel("*Sign up*", style="bold italic blue"))
     while True:
         console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
         choice = input()
@@ -324,7 +325,7 @@ def sign_up():
 
 def login():
     clear_screen()
-    console.print(Panel("*Login*", style="bold italic yellow"))
+    console.print(Panel("*Login*", style="bold italic blue"))
     while True:
         console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
         choice = input()
@@ -368,7 +369,7 @@ def main():
         panel = Panel(
             "[bold white]*** Welcome to WallWizard Game ***[/bold white]",
             title="[bold cyan]🎮 WallWizard 🎮[/bold cyan]",
-            subtitle="[italic bold magenta]Let the magic begin![/italic bold magenta]",
+            subtitle="[italic bold magenta]Let's Do This![/italic bold magenta]",
             border_style="cyan",
             padding=(1, 2),
         )
