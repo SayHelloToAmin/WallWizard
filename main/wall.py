@@ -14,7 +14,7 @@ games_file = 'games_data.json'
 
 console = Console()
 
-def clear_screen():
+def terminal_refresh():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def save_game(game_data):
@@ -77,7 +77,7 @@ def display_menu():
 
 
 def display_game_history(user):
-    clear_screen()
+    terminal_refresh()
     user_games = list_games(user['username'])
     if not user_games:
         console.print(Panel("No history found!", style="bold red"))
@@ -94,7 +94,7 @@ def display_game_history(user):
     console.print(table)
 
 def display_leaderboard():
-    clear_screen()
+    terminal_refresh()
     try:
         with open(games_file, 'r') as file:
             games = json.load(file)
@@ -151,7 +151,7 @@ def display_leaderboard():
     console.print(table)
 
 def start_new_game(user):
-    clear_screen()
+    terminal_refresh()
     console.print(Panel("Starting a new game...", style="bold magenta"))
 
     player1_position = (0, 0)
@@ -183,7 +183,7 @@ def start_new_game(user):
     console.print(Panel(f"Game {game_id} saved and exited!", style="green"))
 
 def continue_game(user):
-    clear_screen()
+    terminal_refresh()
     console.print(Panel("Continuing a previous game...", style="bold magenta"))
 
 def menu(user):
@@ -201,7 +201,7 @@ def menu(user):
         elif choice == '4':
             display_leaderboard()
         elif choice == '5':
-            clear_screen()
+            terminal_refresh()
             console.print(Panel("Logging out...", style="bold italic yellow"))
             break
         else:
@@ -254,60 +254,60 @@ def save_user(user_data):
         json.dump(users, file, indent=4)
 
 def sign_up():
-    clear_screen()
+    terminal_refresh()
     console.print(Panel("*Sign up*", style="bold italic blue"))
     while True:
         console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
         choice = input()
         if choice.lower() == 'b':
-            clear_screen()
+            terminal_refresh()
             return
             
-        clear_screen()
+        terminal_refresh()
             
         console.print("Username (Enter 'b' to go back to the main): ", style="bold white")
         username = input()
         if username.lower() == "b":
-            clear_screen()
+            terminal_refresh()
             return
         if user_exists(username):
-            clear_screen()
+            terminal_refresh()
             console.print(Panel("Username or email has already been used!", style="bold red"))
         else:
             break
 
-    clear_screen()
+    terminal_refresh()
 
     while True:
         console.print("Password (at least 8 characters, Enter 'b' to go back to the main): ", style="bold white")
         password = input()
         if password.lower() == "b":
-            clear_screen()
+            terminal_refresh()
             return
         if len(password) < 8:
-            clear_screen()
+            terminal_refresh()
             console.print(Panel("Password must contain at least 8 characters!", style="bold red"))
         else:
             break
 
-    clear_screen()
+    terminal_refresh()
 
     while True:
         console.print("Email (Enter 'b' to go back to the main): ", style="bold white")
         email = input()
         if email.lower() == "b":
-            clear_screen()
+            terminal_refresh()
             return
         if not check_email(email):
-            clear_screen()
+            terminal_refresh()
             console.print(Panel("Email is not valid! Please try again.", style="bold red"))
         elif user_exists(username, email):
-            clear_screen() 
+            terminal_refresh() 
             console.print(Panel("Email is already been used! Please enter a different email.", style="bold red"))
         else:
             break
 
-    clear_screen()
+    terminal_refresh()
 
     user_id = str(uuid.uuid4())
     hashed_password = hash_password(password)
@@ -324,44 +324,44 @@ def sign_up():
 
 
 def login():
-    clear_screen()
+    terminal_refresh()
     console.print(Panel("*Login*", style="bold italic blue"))
     while True:
         console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
         choice = input()
         if choice.lower() == 'b':
-            clear_screen()
+            terminal_refresh()
             return
         
-        clear_screen()
+        terminal_refresh()
 
         console.print("Username (Enter 'b' to go back to the main): ", style="bold white")
         username = input()
         if username.lower() == "b":
-            clear_screen()
+            terminal_refresh()
             return
         user = check_user(username)
 
         if not user:
-            clear_screen()
+            terminal_refresh()
             console.print(Panel("Username not found! Please try again.", style="bold red"))
             continue
         else:
-            clear_screen()
+            terminal_refresh()
             break
 
     while True:
         console.print("Password (Enter 'b' to go back to the main): ", style="bold white")
         password = input()
         if password.lower() == "b":
-            clear_screen()
+            terminal_refresh()
             return
         if check_password(user['password'], password):
-            clear_screen()
+            terminal_refresh()
             console.print(Panel("Login successful!", style="bold green"))
             return user
         else:
-            clear_screen()
+            terminal_refresh()
             console.print(Panel("Password is incorrect! Please try again.", style="bold red"))
 
 def main():
