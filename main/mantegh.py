@@ -18,17 +18,17 @@ class QuoridorGame:
             line = ""
             for col in range(self.board_size):
                 if (row, col) == self.players[1]["position"]:
-                    line += "P1 "
+                    line += "X"
                 elif (row, col) == self.players[2]["position"]:
-                    line += "P2 "
+                    line += "Y"
                 else:
-                    line += ".  "
+                    line += "o"
 
                 if col < self.board_size - 1:
                     if ((row, col), (row + 1, col)) in self.vertical_walls:
-                        line += "| "
+                        line += " | "
                     else:
-                        line += "  "
+                        line += " . "
 
             print(line)
 
@@ -36,15 +36,15 @@ class QuoridorGame:
                 line = ""
                 for col in range(self.board_size):
                     if ((row, col), (row, col + 1)) in self.horizontal_walls:
-                        line += "---"
+                        line += "- "
                     else:
-                        line += "   "
+                        line += ". "
 
                     if col < self.board_size - 1:
                         line += "  "
                 print(line)
 
-        print(f"\nPlayer {self.current_player}. Walls: {self.players[self.current_player]['walls']}\n")
+        print(f"\nPlayer {self.current_player}. Walls: {self.players[self.current_player]['walls']}")
 
     def is_valid_move(self, player, direction):
         x, y = self.players[player]["position"]
