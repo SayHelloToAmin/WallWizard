@@ -1,198 +1,173 @@
-import os
-from rich.console import Console
+import random
 from collections import deque
 
-console = Console()
+class QuoridorGame:
+    def __init__(self):
+        self.board_size = 9
+        self.board = [[None for _ in range(self.board_size)] for _ in range(self.board_size)]
+        self.walls = set()
+        self.players = {
+            1: {"position": (0, 4), "walls": 10},
+            2: {"position": (8, 4), "walls": 10},
+        }
+        self.current_player = random.choice([1, 2])
 
-# Game board dimensions
-BOARD_SIZE = 9
-
-# Initialize game board
-def initialize_board():
-    board = [[" " for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
-    return board
-
-# Display the board
-def display_board(board, walls):
-    console.print("\n  " + "   ".join(map(str, range(1, BOARD_SIZE + 1))), style="bold cyan")  # تغییر شماره‌گذاری ستون‌ها
-    for i, row in enumerate(board):
-        # نمایش ردیف مهره‌ها
-        row_str = " | ".join(row)
-        console.print(f"{i + 1} {row_str}")  # تغییر شماره‌گذاری ردیف‌ها
-        
-        # نمایش دیوارهای افقی
-        if i < BOARD_SIZE - 1:
-            horizontal_walls = ""
-            for j in range(BOARD_SIZE):
-                if (i, j, 'h') in walls:
-                    horizontal_walls += "---"  # دیوار افقی
+    def print_board(self):
+        for row in range(self.board_size):
+            line = ""
+            for col in range(self.board_size):
+                if (row, col) == self.players[1]["position"]:
+                    line += "P1 "
+                elif (row, col) == self.players[2]["position"]:
+                    line += "P2 "
                 else:
-                    horizontal_walls += "   "  # فضای خالی
-                if j < BOARD_SIZE - 1:
-                    horizontal_walls += " "  # فضای بین خانه‌ها
-            console.print(horizontal_walls)
+                    line += ".  "
+            print(line)
+        print()
 
-        # نمایش دیوارهای عمودی
-        if i < BOARD_SIZE - 1:
-            vertical_walls = ""
-            for j in range(BOARD_SIZE):
-                if (i, j, 'v') in walls:
-                    vertical_walls += "|   "  # دیوار عمودی
-                else:
-                    vertical_walls += "    "  # فضای خالی
-            console.print(vertical_walls)
+    def is_valid_move(self, player, direction):
+        x, y = self.players[player]["position"]
+        dx, dy = {"u": (-1, 0), "d": (1, 0), "l": (0, -1), "r": (0, 1)}[direction]
+        new_x, new_y = x + dx, y + dy
 
-# Check if a move is valid
-def is_valid_move(board, player_pos, new_pos, walls, opponent_pos):
-    x, y = player_pos
-    nx, ny = new_pos
-    if not (0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE):
-        return False
-    if abs(x - nx) + abs(y - ny) > 2:  # حرکت باید فقط یک یا دو خانه باشد
-        return False
-
-    # اگر مهره حریف در مسیر حرکت قرار دارد، بررسی می‌کنیم که آیا می‌توان از روی آن بپرید
-    if abs(x - nx) == 2 and y == ny:  # حرکت عمودی
-        mid_x = (x + nx) // 2
-        if (mid_x, y) == opponent_pos:  # اگر مهره حریف وسط مسیر است
-            if (mid_x, y, 'h') in walls:  # اگر دیوار وجود داشته باشد، نمی‌توان از روی مهره پرید
-                return False
-            return True
-    elif abs(y - ny) == 2 and x == nx:  # حرکت افقی
-        mid_y = (y + ny) // 2
-        if (x, mid_y) == opponent_pos:  # اگر مهره حریف وسط مسیر است
-            if (x, mid_y, 'v') in walls:  # اگر دیوار وجود داشته باشد، نمی‌توان از روی مهره پرید
-                return False
-            return True
-
-    # بررسی دیوارها برای حرکت معمولی (یک خانه به جلو یا عقب)
-    if x == nx:  # حرکت افقی
-        if (x, min(y, ny), 'h') in walls:
-            return False
-    elif y == ny:  # حرکت عمودی
-        if (min(x, nx), y, 'v') in walls:
+        # Check boundaries
+        if not (0 <= new_x < self.board_size and 0 <= new_y < self.board_size):
             return False
 
-    # اگر خانه مقصد توسط مهره دیگری اشغال شده باشد
-    if board[nx][ny] != " ":
-        return False
+        # Check walls
+        if direction in ["u", "d"]:
+            wall = ((min(x, new_x), y), (min(x, new_x), y + 1))
+        else:  # "left" or "right"
+            wall = ((x, min(y, new_y)), (x + 1, min(y, new_y)))
 
-    return True
+        if wall in self.walls:
+            return False
 
-# Check if a wall placement is valid
-def is_valid_wall(walls, wall_pos):
-    x, y, orientation = wall_pos
-    if orientation not in ('h', 'v'):
-        return False
-    if orientation == 'h' and (x >= BOARD_SIZE - 1 or y >= BOARD_SIZE - 1):
-        return False
-    if orientation == 'v' and (x >= BOARD_SIZE - 1 or y >= BOARD_SIZE - 1):
-        return False
-    if wall_pos in walls:
-        return False
-    return True
+        return True
 
-# BFS to check for a valid path
-def has_path(board, start, goal, walls):
-    queue = deque([start])
-    visited = set()
-    while queue:
-        x, y = queue.popleft()
-        if (x, y) == goal:
-            return True
-        if (x, y) in visited:
-            continue
-        visited.add((x, y))
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE:
-                if is_valid_move(board, (x, y), (nx, ny), walls, goal):
+    def move_player(self, player, direction):
+        if not self.is_valid_move(player, direction):
+            print(f"Invalid move for player {player} in direction {direction}.")
+            return False
+
+        dx, dy = {"u": (-1, 0), "d": (1, 0), "l": (0, -1), "r": (0, 1)}[direction]
+        x, y = self.players[player]["position"]
+        new_x, new_y = x + dx, y + dy
+
+        # Check if the new position is occupied by the other player
+        for other_player in [1, 2]:
+            if other_player != player and self.players[other_player]["position"] == (new_x, new_y):
+                # Check if the other player is adjacent and if the next space is empty
+                jump_x, jump_y = new_x + dx, new_y + dy
+                if (0 <= jump_x < self.board_size and 0 <= jump_y < self.board_size and
+                    (jump_x, jump_y) not in [self.players[1]["position"], self.players[2]["position"]] and
+                    self.is_valid_move(player, direction)):
+                    print(f"Player {player} jumps over Player {other_player}.")
+                    self.players[player]["position"] = (jump_x, jump_y)
+                    return True
+                else:
+                    print(f"Invalid move: Player {other_player} is blocking the path.")
+                    return False
+
+        # If no jump, just move normally
+        self.players[player]["position"] = (new_x, new_y)
+        return True
+
+
+
+    def is_valid_wall(self, wall):
+        # Wall must not overlap existing walls
+        if wall in self.walls:
+            return False
+
+        # Wall must not block all paths
+        self.walls.add(wall)
+        if not self.has_path(1) or not self.has_path(2):
+            self.walls.remove(wall)
+            return False
+
+        self.walls.remove(wall)
+        return True
+
+    def place_wall(self, player, wall):
+        if self.players[player]["walls"] == 0:
+            print(f"Player {player} has no walls left.")
+            return False
+
+        if not self.is_valid_wall(wall):
+            print("Invalid wall placement.")
+            return False
+
+        self.walls.add(wall)
+        self.players[player]["walls"] -= 1
+        return True
+
+    def has_path(self, player):
+        start = self.players[player]["position"]
+        goal_row = 0 if player == 1 else self.board_size - 1
+
+        visited = set()
+        queue = deque([start])
+
+        while queue:
+            x, y = queue.popleft()
+            if x == goal_row:
+                return True
+
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nx, ny = x + dx, y + dy
+                if (0 <= nx < self.board_size and 0 <= ny < self.board_size and
+                        (nx, ny) not in visited and self.is_valid_move(player, "up")):
+                    visited.add((nx, ny))
                     queue.append((nx, ny))
-    return False
 
-# Game loop
-def play_game():
-    board = initialize_board()
-    walls = {}
-    player1_pos = (0, BOARD_SIZE // 2)
-    player2_pos = (BOARD_SIZE - 1, BOARD_SIZE // 2)
-    player1_walls = 10
-    player2_walls = 10
+        return False
 
-    board[player1_pos[0]][player1_pos[1]] = "1"
-    board[player2_pos[0]][player2_pos[1]] = "2"
+    def check_winner(self):
+        for player in [1, 2]:
+            x, _ = self.players[player]["position"]
+            if (player == 1 and x == self.board_size - 1) or (player == 2 and x == 0):
+                return player
+        return None
 
-    current_player = 1
+    def play_turn(self):
+        while True:
+            print(f"Player {self.current_player}'s turn.")
+            self.print_board()
+            action = input("Choose action (m:move / w:wall): ").strip().lower()
 
-    while True:
-        terminal_refresh()
-        display_board(board, walls)
-        console.print(f"Player {current_player}'s turn", style="bold green")
-
-        # نمایش تعداد دیوارهای باقی‌مانده برای بازیکن فعلی
-        if current_player == 1:
-            console.print(f"Player 1 has {player1_walls} walls left.", style="bold cyan")
-        else:
-            console.print(f"Player 2 has {player2_walls} walls left.", style="bold cyan")
-
-        action = console.input("Choose action (move/wall): ").strip().lower()
-        if action == "move":
-            x, y = map(int, console.input("Enter new position (x y): ").split())
-            new_pos = (x - 1, y - 1)  # تغییرات برای هماهنگ کردن با شماره‌گذاری جدید
-            if current_player == 1:
-                if is_valid_move(board, player1_pos, new_pos, walls, player2_pos):
-                    board[player1_pos[0]][player1_pos[1]] = " "
-                    player1_pos = new_pos
-                    board[x - 1][y - 1] = "1"
+            if action == "m":
+                direction = input("Choose direction (u:up / d:down / l:left / r:right): ").strip().lower()
+                if self.move_player(self.current_player, direction):
+                    winner = self.check_winner()
+                    if winner:
+                        print(f"Player {winner} wins!")
+                        return True
+                    break
                 else:
-                    console.print("Invalid move!", style="bold red")
-                    continue
-            else:
-                if is_valid_move(board, player2_pos, new_pos, walls, player1_pos):
-                    board[player2_pos[0]][player2_pos[1]] = " "
-                    player2_pos = new_pos
-                    board[x - 1][y - 1] = "2"
-                else:
-                    console.print("Invalid move!", style="bold red")
-                    continue
-        elif action == "wall":
-            wall_input = console.input("Enter wall position (x y orientation[h/v]): ").split()
-            if len(wall_input) != 3:
-                console.print("Invalid input! Please enter x, y, and orientation (h/v).", style="bold red")
-                continue
-            try:
-                x, y = int(wall_input[0]), int(wall_input[1])
-                orientation = wall_input[2]
-                wall_pos = (x - 1, y - 1, orientation)  # تغییرات برای هماهنگ کردن با شماره‌گذاری جدید
-                if is_valid_wall(walls, wall_pos):
-                    walls[wall_pos] = "---" if orientation == 'h' else "|"
-                    if current_player == 1:
-                        player1_walls -= 1
+                    print("Invalid move. Try again.")
+
+            elif action == "w":
+                try:
+                    x1, y1 = map(int, input("Enter the first point of the wall (x1 y1): ").split())
+                    x2, y2 = map(int, input("Enter the second point of the wall (x2 y2): ").split())
+                    wall = ((x1, y1), (x2, y2))
+                    if self.place_wall(self.current_player, wall):
+                        print("Wall placed.")
+                        break
                     else:
-                        player2_walls -= 1
-                else:
-                    console.print("Invalid wall placement!", style="bold red")
-                    continue
-            except ValueError:
-                console.print("Invalid input! Coordinates must be integers.", style="bold red")
-                continue
-        else:
-            console.print("Invalid action!", style="bold red")
-            continue
+                        print("Invalid wall placement. Try again.")
+                except ValueError:
+                    print("Invalid input. Please enter integers for coordinates.")
+            else:
+                print("Invalid action. Try again.")
 
-        # Check for win
-        if player1_pos[0] == BOARD_SIZE - 1:
-            console.print("Player 1 wins!", style="bold green")
-            break
-        elif player2_pos[0] == 0:
-            console.print("Player 2 wins!", style="bold green")
-            break
+        self.current_player = 3 - self.current_player  # Switch player
+        return False
 
-        current_player = 3 - current_player
 
-# Refresh terminal
-def terminal_refresh():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-if __name__ == "__main__":
-    play_game()
+# Run the game
+game = QuoridorGame()
+game_running = True
+while game_running:
+    game_running = not game.play_turn()
