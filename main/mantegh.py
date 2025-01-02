@@ -14,11 +14,11 @@ def initialize_board():
 
 # Display the board
 def display_board(board, walls):
-    console.print("\n  " + "   ".join(map(str, range(BOARD_SIZE))), style="bold cyan")
+    console.print("\n  " + "   ".join(map(str, range(1, BOARD_SIZE + 1))), style="bold cyan")  # تغییر شماره‌گذاری ستون‌ها
     for i, row in enumerate(board):
         # نمایش ردیف مهره‌ها
         row_str = " | ".join(row)
-        console.print(f"{i} {row_str}")
+        console.print(f"{i + 1} {row_str}")  # تغییر شماره‌گذاری ردیف‌ها
         
         # نمایش دیوارهای افقی
         if i < BOARD_SIZE - 1:
@@ -43,20 +43,40 @@ def display_board(board, walls):
             console.print(vertical_walls)
 
 # Check if a move is valid
-def is_valid_move(board, player_pos, new_pos, walls):
+def is_valid_move(board, player_pos, new_pos, walls, opponent_pos):
     x, y = player_pos
     nx, ny = new_pos
     if not (0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE):
         return False
-    if abs(x - nx) + abs(y - ny) > 1:
+    if abs(x - nx) + abs(y - ny) > 2:  # حرکت باید فقط یک یا دو خانه باشد
         return False
-    # Check for walls
-    if x == nx:  # Horizontal move
+
+    # اگر مهره حریف در مسیر حرکت قرار دارد، بررسی می‌کنیم که آیا می‌توان از روی آن بپرید
+    if abs(x - nx) == 2 and y == ny:  # حرکت عمودی
+        mid_x = (x + nx) // 2
+        if (mid_x, y) == opponent_pos:  # اگر مهره حریف وسط مسیر است
+            if (mid_x, y, 'h') in walls:  # اگر دیوار وجود داشته باشد، نمی‌توان از روی مهره پرید
+                return False
+            return True
+    elif abs(y - ny) == 2 and x == nx:  # حرکت افقی
+        mid_y = (y + ny) // 2
+        if (x, mid_y) == opponent_pos:  # اگر مهره حریف وسط مسیر است
+            if (x, mid_y, 'v') in walls:  # اگر دیوار وجود داشته باشد، نمی‌توان از روی مهره پرید
+                return False
+            return True
+
+    # بررسی دیوارها برای حرکت معمولی (یک خانه به جلو یا عقب)
+    if x == nx:  # حرکت افقی
         if (x, min(y, ny), 'h') in walls:
             return False
-    elif y == ny:  # Vertical move
+    elif y == ny:  # حرکت عمودی
         if (min(x, nx), y, 'v') in walls:
             return False
+
+    # اگر خانه مقصد توسط مهره دیگری اشغال شده باشد
+    if board[nx][ny] != " ":
+        return False
+
     return True
 
 # Check if a wall placement is valid
@@ -86,7 +106,7 @@ def has_path(board, start, goal, walls):
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             nx, ny = x + dx, y + dy
             if 0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE:
-                if is_valid_move(board, (x, y), (nx, ny), walls):
+                if is_valid_move(board, (x, y), (nx, ny), walls, goal):
                     queue.append((nx, ny))
     return False
 
@@ -109,23 +129,29 @@ def play_game():
         display_board(board, walls)
         console.print(f"Player {current_player}'s turn", style="bold green")
 
+        # نمایش تعداد دیوارهای باقی‌مانده برای بازیکن فعلی
+        if current_player == 1:
+            console.print(f"Player 1 has {player1_walls} walls left.", style="bold cyan")
+        else:
+            console.print(f"Player 2 has {player2_walls} walls left.", style="bold cyan")
+
         action = console.input("Choose action (move/wall): ").strip().lower()
         if action == "move":
             x, y = map(int, console.input("Enter new position (x y): ").split())
-            new_pos = (x, y)
+            new_pos = (x - 1, y - 1)  # تغییرات برای هماهنگ کردن با شماره‌گذاری جدید
             if current_player == 1:
-                if is_valid_move(board, player1_pos, new_pos, walls):
+                if is_valid_move(board, player1_pos, new_pos, walls, player2_pos):
                     board[player1_pos[0]][player1_pos[1]] = " "
                     player1_pos = new_pos
-                    board[x][y] = "1"
+                    board[x - 1][y - 1] = "1"
                 else:
                     console.print("Invalid move!", style="bold red")
                     continue
             else:
-                if is_valid_move(board, player2_pos, new_pos, walls):
+                if is_valid_move(board, player2_pos, new_pos, walls, player1_pos):
                     board[player2_pos[0]][player2_pos[1]] = " "
                     player2_pos = new_pos
-                    board[x][y] = "2"
+                    board[x - 1][y - 1] = "2"
                 else:
                     console.print("Invalid move!", style="bold red")
                     continue
@@ -137,7 +163,7 @@ def play_game():
             try:
                 x, y = int(wall_input[0]), int(wall_input[1])
                 orientation = wall_input[2]
-                wall_pos = (x, y, orientation)
+                wall_pos = (x - 1, y - 1, orientation)  # تغییرات برای هماهنگ کردن با شماره‌گذاری جدید
                 if is_valid_wall(walls, wall_pos):
                     walls[wall_pos] = "---" if orientation == 'h' else "|"
                     if current_player == 1:
