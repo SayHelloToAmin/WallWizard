@@ -23,7 +23,9 @@ class QuoridorGame:
                 else:
                     line += ".  "
             print(line)
-        print()
+        
+        # Display the current player and the number of walls remaining at the bottom of the board
+        print(f"\nPlayer {self.current_player}. Walls: {self.players[self.current_player]['walls']}\n")
 
     def is_valid_move(self, player, direction):
         x, y = self.players[player]["position"]
@@ -72,8 +74,6 @@ class QuoridorGame:
         # If no jump, just move normally
         self.players[player]["position"] = (new_x, new_y)
         return True
-
-
 
     def is_valid_wall(self, wall):
         # Wall must not overlap existing walls
@@ -132,7 +132,6 @@ class QuoridorGame:
 
     def play_turn(self):
         while True:
-            print(f"Player {self.current_player}'s turn.")
             self.print_board()
             action = input("Choose action (m:move / w:wall): ").strip().lower()
 
@@ -141,6 +140,7 @@ class QuoridorGame:
                 if self.move_player(self.current_player, direction):
                     winner = self.check_winner()
                     if winner:
+                        self.print_board()  # Display the board when the game ends
                         print(f"Player {winner} wins!")
                         return True
                     break
