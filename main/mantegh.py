@@ -5,7 +5,8 @@ class QuoridorGame:
     def __init__(self):
         self.board_size = 9
         self.board = [[None for _ in range(self.board_size)] for _ in range(self.board_size)]
-        self.walls = set()
+        self.horizontal_walls = set()  # Walls placed horizontally
+        self.vertical_walls = set()  # Walls placed vertically
         self.players = {
             1: {"position": (0, 4), "walls": 10},
             2: {"position": (8, 4), "walls": 10},
@@ -16,15 +17,36 @@ class QuoridorGame:
         for row in range(self.board_size):
             line = ""
             for col in range(self.board_size):
+                # Print player positions
                 if (row, col) == self.players[1]["position"]:
                     line += "P1 "
                 elif (row, col) == self.players[2]["position"]:
                     line += "P2 "
                 else:
                     line += ".  "
+
+                # Print vertical walls
+                if col < self.board_size - 1:
+                    if ((row, col), (row + 1, col)) in self.vertical_walls:
+                        line += "| "
+                    else:
+                        line += "  "
+
             print(line)
-        
-        # Display the current player and the number of walls remaining at the bottom of the board
+
+            # Print horizontal walls
+            if row < self.board_size - 1:
+                line = ""
+                for col in range(self.board_size):
+                    if ((row, col), (row, col + 1)) in self.horizontal_walls:
+                        line += "---"
+                    else:
+                        line += "   "
+
+                    if col < self.board_size - 1:
+                        line += "  "
+                print(line)
+
         print(f"\nPlayer {self.current_player}. Walls: {self.players[self.current_player]['walls']}\n")
 
     def is_valid_move(self, player, direction):
@@ -37,12 +59,23 @@ class QuoridorGame:
             return False
 
         # Check walls
-        if direction in ["u", "d"]:
-            wall = ((min(x, new_x), y), (min(x, new_x), y + 1))
-        else:  # "left" or "right"
-            wall = ((x, min(y, new_y)), (x + 1, min(y, new_y)))
+        if direction == "u" and ((new_x, y), (x, y)) in self.horizontal_walls:
+            return False
+        if direction == "d" and ((x, y), (new_x, y)) in self.horizontal_walls:
+            return False
+        if direction == "l" and ((x, new_y), (x, y)) in self.vertical_walls:
+            return False
+        if direction == "r" and ((x, y), (x, new_y)) in self.vertical_walls:
+            return False
 
-        if wall in self.walls:
+        # Check if the move is blocked by a wall in front of the player
+        if direction == "u" and (new_x - 1 >= 0 and ((new_x - 1, y), (new_x, y)) in self.horizontal_walls):
+            return False
+        if direction == "d" and (new_x + 1 < self.board_size and ((x, y), (new_x + 1, y)) in self.horizontal_walls):
+            return False
+        if direction == "l" and (new_y - 1 >= 0 and ((x, new_y - 1), (x, new_y)) in self.vertical_walls):
+            return False
+        if direction == "r" and (new_y + 1 < self.board_size and ((x, y), (x, new_y + 1)) in self.vertical_walls):
             return False
 
         return True
@@ -62,8 +95,8 @@ class QuoridorGame:
                 # Check if the other player is adjacent and if the next space is empty
                 jump_x, jump_y = new_x + dx, new_y + dy
                 if (0 <= jump_x < self.board_size and 0 <= jump_y < self.board_size and
-                    (jump_x, jump_y) not in [self.players[1]["position"], self.players[2]["position"]] and
-                    self.is_valid_move(player, direction)):
+                        (jump_x, jump_y) not in [self.players[1]["position"], self.players[2]["position"]] and
+                        self.is_valid_move(player, direction)):
                     print(f"Player {player} jumps over Player {other_player}.")
                     self.players[player]["position"] = (jump_x, jump_y)
                     return True
@@ -77,16 +110,27 @@ class QuoridorGame:
 
     def is_valid_wall(self, wall):
         # Wall must not overlap existing walls
-        if wall in self.walls:
+        if wall in self.horizontal_walls or wall in self.vertical_walls:
             return False
 
         # Wall must not block all paths
-        self.walls.add(wall)
+        if wall[0][0] == wall[1][0]:  # Horizontal wall
+            self.horizontal_walls.add(wall)
+        else:  # Vertical wall
+            self.vertical_walls.add(wall)
+
         if not self.has_path(1) or not self.has_path(2):
-            self.walls.remove(wall)
+            if wall in self.horizontal_walls:
+                self.horizontal_walls.remove(wall)
+            else:
+                self.vertical_walls.remove(wall)
             return False
 
-        self.walls.remove(wall)
+        if wall in self.horizontal_walls:
+            self.horizontal_walls.remove(wall)
+        else:
+            self.vertical_walls.remove(wall)
+
         return True
 
     def place_wall(self, player, wall):
@@ -98,7 +142,11 @@ class QuoridorGame:
             print("Invalid wall placement.")
             return False
 
-        self.walls.add(wall)
+        if wall[0][0] == wall[1][0]:  # Horizontal wall
+            self.horizontal_walls.add(wall)
+        else:  # Vertical wall
+            self.vertical_walls.add(wall)
+
         self.players[player]["walls"] -= 1
         return True
 
@@ -114,10 +162,10 @@ class QuoridorGame:
             if x == goal_row:
                 return True
 
-            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            for dx, dy, direction in [(-1, 0, "u"), (1, 0, "d"), (0, -1, "l"), (0, 1, "r")]:
                 nx, ny = x + dx, y + dy
                 if (0 <= nx < self.board_size and 0 <= ny < self.board_size and
-                        (nx, ny) not in visited and self.is_valid_move(player, "up")):
+                        (nx, ny) not in visited and self.is_valid_move(player, direction)):
                     visited.add((nx, ny))
                     queue.append((nx, ny))
 
