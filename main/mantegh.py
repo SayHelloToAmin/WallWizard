@@ -21,7 +21,11 @@ class QuoridorGame:
                 elif (row, col) == self.players[2]["position"]:
                     line += "2"
                 elif (row, col) in self.walls:
-                    line += "-"
+                    # Check if the wall is vertical or horizontal
+                    if (row + 1, col) in self.walls or (row - 1, col) in self.walls:
+                        line += "|"
+                    else:
+                        line += "-"
                 elif row % 2 == 0 and col % 2 == 0:
                     line += "o"
                 else:
@@ -73,6 +77,7 @@ class QuoridorGame:
         return True
 
     def is_valid_wall(self, wall):
+        # Check if the wall points are within bounds and do not overlap existing walls
         for point in wall:
             if not (0 <= point[0] < self.board_size and 0 <= point[1] < self.board_size):
                 return False
@@ -80,6 +85,29 @@ class QuoridorGame:
             if point in self.walls or (point[0] % 2 == 0 and point[1] % 2 == 0):
                 return False
 
+        # Check for wall intersection or continuity
+        if len(wall) == 2:
+            x1, y1 = wall[0]
+            x2, y2 = wall[1]
+            for existing_wall in self.walls:
+                ex1, ey1 = existing_wall
+                for ex2, ey2 in self.walls:
+                    # Check if walls cross each other (e.g., form a + shape)
+                    if (x1 == ex1 and y1 == ey1 and x2 == ex2 and y2 == ey2) or \
+                    (x1 == ex2 and y1 == ey2 and x2 == ex1 and y2 == ey1):
+                        return False
+
+                    # Allow walls to be in continuity
+                    if (x1 == ex1 and x2 == ex2 and abs(y1 - ey1) == 2 and abs(y2 - ey2) == 2) or \
+                    (y1 == ey1 and y2 == ey2 and abs(x1 - ex1) == 2 and abs(x2 - ex2) == 2):
+                        continue
+
+                    # Check if walls intersect diagonally
+                    if (abs(x1 - ex1) == 1 and abs(y1 - ey1) == 1) or \
+                    (abs(x2 - ex2) == 1 and abs(y2 - ey2) == 1):
+                        return False
+
+        # Temporarily add wall for path-checking
         for point in wall:
             self.walls.add(point)
 
@@ -88,10 +116,12 @@ class QuoridorGame:
                 self.walls.remove(point)
             return False
 
+        # Remove temporary wall
         for point in wall:
             self.walls.remove(point)
 
         return True
+
 
     def place_wall(self, player, x1, y1, orientation):
         if self.players[player]["walls"] == 0:
@@ -115,7 +145,7 @@ class QuoridorGame:
             return False
 
         if not self.is_valid_wall(wall):
-            print("Invalid wall placement.")
+            print("Invalid wall placement. Walls cannot overlap or intersect.")
             return False
 
         for point in wall:
@@ -170,7 +200,6 @@ class QuoridorGame:
                     break
                 else:
                     print("Invalid move. Try again.")
-
             elif action == "w":
                 try:
                     x1, y1 = map(int, input("Enter the starting point of the wall (x y): ").split())
