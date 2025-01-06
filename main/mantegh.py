@@ -4,7 +4,7 @@ from collections import deque
 class QuoridorGame:
     def __init__(self):
         self.board_size = 17
-        self.board = [[None for _ in range(self.board_size)] for _ in range(self.board_size)]
+        self.board = [[None for x in range(self.board_size)] for _ in range(self.board_size)]
         self.walls = set()
         self.players = {
             1: {"position": (0, 8), "walls": 10},
