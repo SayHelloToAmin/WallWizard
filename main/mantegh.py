@@ -57,8 +57,8 @@ class QuoridorGame:
         other_player = 3 - player
         other_x, other_y = self.players[other_player]["position"]
 
-        if (new_x, new_y) == (other_x, other_y):
-            jump_x, jump_y = other_x + dx, other_y + dy
+        if (new_x , new_y) == (other_x , other_y):
+            jump_x , jump_y = other_x + dx, other_y + dy
             if (0 <= jump_x < self.board_size and 0 <= jump_y < self.board_size and
                     self.is_valid_move(player, direction) and
                     (jump_x % 2 == 0 and jump_y % 2 == 0)):
