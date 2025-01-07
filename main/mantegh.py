@@ -315,21 +315,17 @@ class QuoridorGame:
                 return True
 
             if (x1 % 2 == 1 and y1 % 2 == 0 and (x1 - 1, y1) in self.walls and (x1 + 1, y1) in self.walls) or \
-               (x1 % 2 == 0 and y1 % 2 == 1 and (x1, y1 - 1) in self.walls and (x1, y1 + 1) in self.walls):
+            (x1 % 2 == 0 and y1 % 2 == 1 and (x1, y1 - 1) in self.walls and (x1, y1 + 1) in self.walls):
                 return True
 
-        for point in wall:
-            self.walls.add(point)
+        # Temporarily add the wall to check paths
+        self.walls.update(wall)
+        valid = self.has_path(1) and self.has_path(2)
 
-        if not self.has_path(1) or not self.has_path(2):
-            for point in wall:
-                self.walls.remove(point)
-            return False
+        # Remove the temporary wall placement
+        self.walls.difference_update(wall)
+        return valid
 
-        for point in wall:
-            self.walls.remove(point)
-
-        return True
 
     def place_wall(self, player, x1, y1, orientation):
         if self.players[player]["walls"] == 0:
@@ -379,10 +375,10 @@ class QuoridorGame:
         goal_row = 0 if player == 1 else self.board_size - 1
 
         visited = set()
-        queue = deque([start])
+        stack = [start]
 
-        while queue:
-            x, y = queue.popleft()
+        while stack:
+            x, y = stack.pop()
             if x == goal_row:
                 return True
 
@@ -393,7 +389,7 @@ class QuoridorGame:
                         (nx, ny) not in visited and (nx, ny) not in self.walls and
                         (wall_x, wall_y) not in self.walls and (nx % 2 == 0 and ny % 2 == 0)):
                     visited.add((nx, ny))
-                    queue.append((nx, ny))
+                    stack.append((nx, ny))
 
         return False
 
