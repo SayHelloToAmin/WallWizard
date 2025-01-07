@@ -13,6 +13,7 @@ class QuoridorGame:
         self.current_player = random.choice([1, 2])
 
     def print_board(self):
+        
         for row in range(self.board_size):
             line = ""
             for col in range(self.board_size):
@@ -79,6 +80,7 @@ class QuoridorGame:
         return True
     
     def is_valid_wall(self, wall):
+        # Check if the wall points are within bounds and do not overlap existing walls
         for point in wall:
             if not (0 <= point[0] < self.board_size and 0 <= point[1] < self.board_size):
                 return False
@@ -86,22 +88,29 @@ class QuoridorGame:
             if point in self.walls or (point[0] % 2 == 0 and point[1] % 2 == 0):
                 return False
 
+        # Check for wall intersection or continuity
         if len(wall) == 2:
             x1, y1 = wall[0]
             x2, y2 = wall[1]
+            for existing_wall in self.walls:
+                ex1, ey1 = existing_wall
+                for ex2, ey2 in self.walls:
+                    # Check if walls cross each other (e.g., form a + shape)
+                    if (x1 == ex1 and y1 == ey1 and x2 == ex2 and y2 == ey2) or \
+                    (x1 == ex2 and y1 == ey2 and x2 == ex1 and y2 == ey1):
+                        return False
 
-            # Check for overlapping or intersecting walls
-            if (x1, y1) in self.walls or (x2, y2) in self.walls:
-                return False
+                    # Allow walls to be in continuity
+                    if (x1 == ex1 and x2 == ex2 and abs(y1 - ey1) == 2 and abs(y2 - ey2) == 2) or \
+                    (y1 == ey1 and y2 == ey2 and abs(x1 - ex1) == 2 and abs(x2 - ex2) == 2):
+                        continue
 
-            # Allow T-shaped walls
-            if (x1 == x2 and abs(y1 - y2) == 2) or (y1 == y2 and abs(x1 - x2) == 2):
-                return True
+                    # Check if walls intersect diagonally
+                    if (abs(x1 - ex1) == 1 and abs(y1 - ey1) == 1) or \
+                    (abs(x2 - ex2) == 1 and abs(y2 - ey2) == 1):
+                        return False
 
-            if (x1 % 2 == 1 and y1 % 2 == 0 and (x1 - 1, y1) in self.walls and (x1 + 1, y1) in self.walls) or \
-               (x1 % 2 == 0 and y1 % 2 == 1 and (x1, y1 - 1) in self.walls and (x1, y1 + 1) in self.walls):
-                return True
-
+        # Temporarily add wall for path-checking
         for point in wall:
             self.walls.add(point)
 
@@ -110,10 +119,12 @@ class QuoridorGame:
                 self.walls.remove(point)
             return False
 
+        # Remove temporary wall
         for point in wall:
             self.walls.remove(point)
 
         return True
+
 
     def place_wall(self, player, x1, y1, orientation):
         if self.players[player]["walls"] == 0:
@@ -138,48 +149,45 @@ class QuoridorGame:
 
         # Check if the wall placement is valid
         if not self.is_valid_wall(wall):
-            print("Invalid wall placement. Walls cannot overlap or intersect.")
-            return False
-
-        # Temporarily add the wall
-        for point in wall:
-            self.walls.add(point)
-
-        # Check if both players still have a valid path
-        if not self.has_path(1) or not self.has_path(2):
-            # Remove the wall and show an error
-            for point in wall:
-                self.walls.remove(point)
-            print("Invalid wall placement. It blocks the path for one of the players.")
+            print("Invalid wall placement. Walls cannot overlap, intersect, or block all paths.")
             return False
 
         # Finalize the wall placement
+        for point in wall:
+            self.walls.add(point)
         self.players[player]["walls"] -= 1
         return True
 
 
+
     def has_path(self, player):
         start = self.players[player]["position"]
-        goal_row = 0 if player == 1 else self.board_size - 1
+        goal_row = 0 if player == 2 else self.board_size - 1  # Player 1 targets bottom row, Player 2 targets top row
 
         visited = set()
-        queue = deque([start])
+        stack = [start]
 
-        while queue:
-            x, y = queue.popleft()
+        while stack:
+            x, y = stack.pop()
             if x == goal_row:
                 return True
+
+            if (x, y) in visited:
+                continue
+            visited.add((x, y))
 
             for dx, dy in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
                 nx, ny = x + dx, y + dy
                 wall_x, wall_y = x + dx // 2, y + dy // 2
+
                 if (0 <= nx < self.board_size and 0 <= ny < self.board_size and
-                        (nx, ny) not in visited and (nx, ny) not in self.walls and
-                        (wall_x, wall_y) not in self.walls and (nx % 2 == 0 and ny % 2 == 0)):
-                    visited.add((nx, ny))
-                    queue.append((nx, ny))
+                        (nx % 2 == 0 and ny % 2 == 0) and  # Ensure it's a valid node
+                        (wall_x, wall_y) not in self.walls and  # Check no wall in the way
+                        (nx, ny) not in visited):
+                    stack.append((nx, ny))
 
         return False
+
 
     def check_winner(self):
         for player in [1, 2]:
@@ -225,4 +233,4 @@ class QuoridorGame:
 game = QuoridorGame()
 game_running = True
 while game_running:
-    game_running = not game.play_turn()
+    game_running = not game.play_turn() 
