@@ -237,16 +237,19 @@ class QuoridorGame:
                 elif (row, col) == self.players[2]["position"]:
                     line += "🔴"  # Player 2
                 elif (row, col) in self.walls:
-                    if (row + 1, col) in self.walls or (row - 1, col) in self.walls:
-                        line += "🧱"  # Vertical wall
-                    else:
-                        line += "🧱"  # Horizontal wall
+                    line += "🧱"  # Wall segment
                 elif row % 2 == 0 and col % 2 == 0:
                     line += "⚫"  # Board node
+                elif row % 2 == 1 and col % 2 == 1 and (
+                    (row - 1, col) in self.walls and (row + 1, col) in self.walls
+                    or (row, col - 1) in self.walls and (row, col + 1) in self.walls
+                ):
+                    line += "🧱"  # Fill gap between walls
                 else:
                     line += "⚪"  # Board path
             print(line)
         print(f"\nPlayer {self.current_player} {"🔴" if self.current_player == 2 else "🔵"}. Walls: {self.players[self.current_player]['walls']}")
+
 
     def is_valid_move(self, player, direction):
         x, y = self.players[player]["position"]
@@ -262,7 +265,7 @@ class QuoridorGame:
             return False
 
         return True
-
+    
     def move_player(self, player, direction):
         x, y = self.players[player]["position"]
         dx, dy = {"u": (-2, 0), "d": (2, 0), "l": (0, -2), "r": (0, 2)}[direction]
@@ -290,7 +293,7 @@ class QuoridorGame:
 
         self.players[player]["position"] = (new_x, new_y)
         return True
-
+    
     def is_valid_wall(self, wall):
         for point in wall:
             if not (0 <= point[0] < self.board_size and 0 <= point[1] < self.board_size):
@@ -302,20 +305,19 @@ class QuoridorGame:
         if len(wall) == 2:
             x1, y1 = wall[0]
             x2, y2 = wall[1]
-            for existing_wall in self.walls:
-                ex1, ey1 = existing_wall
-                for ex2, ey2 in self.walls:
-                    if (x1 == ex1 and y1 == ey1 and x2 == ex2 and y2 == ey2) or \
-                    (x1 == ex2 and y1 == ey2 and x2 == ex1 and y2 == ey1):
-                        return False
 
-                    if (x1 == ex1 and x2 == ex2 and abs(y1 - ey1) == 2 and abs(y2 - ey2) == 2) or \
-                    (y1 == ey1 and y2 == ey2 and abs(x1 - ex1) == 2 and abs(x2 - ex2) == 2):
-                        continue
+            # Check for overlapping or intersecting walls
+            if (x1, y1) in self.walls or (x2, y2) in self.walls:
+                return False
 
-                    if (abs(x1 - ex1) == 1 and abs(y1 - ey1) == 1) or \
-                    (abs(x2 - ex2) == 1 and abs(y2 - ey2) == 1):
-                        return False
+            # Allow T-shaped walls
+            if (x1 == x2 and abs(y1 - y2) == 2) or (y1 == y2 and abs(x1 - x2) == 2):
+                return True
+
+            if (x1 % 2 == 1 and y1 % 2 == 0 and (x1 - 1, y1) in self.walls and (x1 + 1, y1) in self.walls) or \
+               (x1 % 2 == 0 and y1 % 2 == 1 and (x1, y1 - 1) in self.walls and (x1, y1 + 1) in self.walls):
+                return True
+
         for point in wall:
             self.walls.add(point)
 
@@ -328,7 +330,6 @@ class QuoridorGame:
             self.walls.remove(point)
 
         return True
-
 
     def place_wall(self, player, x1, y1, orientation):
         if self.players[player]["walls"] == 0:
@@ -351,15 +352,27 @@ class QuoridorGame:
             print("Invalid orientation. Use 'h' for horizontal or 'v' for vertical.")
             return False
 
+        # Check if the wall placement is valid
         if not self.is_valid_wall(wall):
             print("Invalid wall placement. Walls cannot overlap or intersect.")
             return False
 
+        # Temporarily add the wall
         for point in wall:
             self.walls.add(point)
 
+        # Check if both players still have a valid path
+        if not self.has_path(1) or not self.has_path(2):
+            # Remove the wall and show an error
+            for point in wall:
+                self.walls.remove(point)
+            print("Invalid wall placement. It blocks the path for one of the players.")
+            return False
+
+        # Finalize the wall placement
         self.players[player]["walls"] -= 1
         return True
+
 
     def has_path(self, player):
         start = self.players[player]["position"]
@@ -423,6 +436,7 @@ class QuoridorGame:
 
         self.current_player = 3 - self.current_player
         return False
+
 
 game = QuoridorGame()
 game_running = True
