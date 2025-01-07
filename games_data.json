@@ -1,0 +1,41 @@
+[
+    {
+        "game_id": "dcfa7d45-388d-4fe2-b612-02f60fd0257f",
+        "player1_username": "amin",
+        "player2_username": "aaa",
+        "player1_position": [
+            0,
+            0
+        ],
+        "player2_position": [
+            5,
+            5
+        ],
+        "wall_position": [
+            3,
+            3
+        ],
+        "current_turn": "amin",
+        "game_result": "In Progress"
+    },
+    {
+        "game_id": "dcfa7d45-388d-4fe2-b612-02f60fd0257f",
+        "player1_username": "amin",
+        "player2_username": "aaa",
+        "player1_position": [
+            0,
+            0
+        ],
+        "player2_position": [
+            5,
+            5
+        ],
+        "wall_position": [
+            3,
+            3
+        ],
+        "current_turn": "amin",
+        "time_spent": 42.6,
+        "game_result": "Player 1 Wins"
+    }
+]
