@@ -80,37 +80,43 @@ class QuoridorGame:
         return True
     
     def is_valid_wall(self, wall):
-        # Check if the wall points are within bounds and do not overlap existing walls
+        # بررسی اینکه دیوارها در محدوده‌ی صفحه و نقاط صحیح باشند
         for point in wall:
             if not (0 <= point[0] < self.board_size and 0 <= point[1] < self.board_size):
                 return False
-
             if point in self.walls or (point[0] % 2 == 0 and point[1] % 2 == 0):
                 return False
 
-        # Check for wall intersection or continuity
+        # بررسی تقاطع دیوارها (یعنی دیوارها نباید همدیگر را قطع کنند)
         if len(wall) == 2:
             x1, y1 = wall[0]
             x2, y2 = wall[1]
+
+            # بررسی اینکه دیوارها قطع نمی‌کنند
             for existing_wall in self.walls:
                 ex1, ey1 = existing_wall
                 for ex2, ey2 in self.walls:
-                    # Check if walls cross each other (e.g., form a + shape)
+                    # اگر دیوارها دقیقا روی هم قرار بگیرند یا یکدیگر را قطع کنند
                     if (x1 == ex1 and y1 == ey1 and x2 == ex2 and y2 == ey2) or \
                     (x1 == ex2 and y1 == ey2 and x2 == ex1 and y2 == ey1):
                         return False
 
-                    # Allow walls to be in continuity
+                    # اگر دیوارها در امتداد هم باشند (افقی یا عمودی) این مورد مجاز است
                     if (x1 == ex1 and x2 == ex2 and abs(y1 - ey1) == 2 and abs(y2 - ey2) == 2) or \
                     (y1 == ey1 and y2 == ey2 and abs(x1 - ex1) == 2 and abs(x2 - ex2) == 2):
                         continue
 
-                    # Check if walls intersect diagonally
+                    # اگر دیوارها به صورت "T" شکل باشند (یک افقی و یک عمودی) این مورد هم مجاز است
+                    if (x1 == ex1 and abs(y1 - ey1) == 1 and abs(y2 - ey2) == 1) or \
+                    (y1 == ey1 and abs(x1 - ex1) == 1 and abs(x2 - ex2) == 1):
+                        continue
+
+                    # بررسی اینکه دیوارها به صورت مورب همدیگر را قطع نکنند
                     if (abs(x1 - ex1) == 1 and abs(y1 - ey1) == 1) or \
                     (abs(x2 - ex2) == 1 and abs(y2 - ey2) == 1):
                         return False
 
-        # Temporarily add wall for path-checking
+        # برای بررسی مسیر، دیوار را موقتا اضافه می‌کنیم
         for point in wall:
             self.walls.add(point)
 
@@ -119,11 +125,12 @@ class QuoridorGame:
                 self.walls.remove(point)
             return False
 
-        # Remove temporary wall
+        # حذف دیوار موقتی
         for point in wall:
             self.walls.remove(point)
 
         return True
+
 
 
     def place_wall(self, player, x1, y1, orientation):
