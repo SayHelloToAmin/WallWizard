@@ -20,7 +20,7 @@ class QuoridorGame:
                 if (row, col) == self.players[1]["position"]:
                     line += "🔵"  # Player 1
                 elif (row, col) == self.players[2]["position"]:
-                    line += "🔴"  # Player 2
+                    line += "🔴"  # Player 2s
                 elif (row, col) in self.walls:
                     line += "🧱"  # Wall segment
                 elif row % 2 == 0 and col % 2 == 0:
