@@ -240,4 +240,4 @@ class QuoridorGame:
 game = QuoridorGame()
 game_running = True
 while game_running:
-    game_running = not game.play_turn() 
+    game_running = not game.play_turn()
