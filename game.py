@@ -105,7 +105,7 @@ async def LEFT_check():
     elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-2] == [1]:
             pass#divar chapesh bashe
     elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] != [0]) and not table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-4] == [1] :
-        if player_loc[f"player_{turn}"][1]-3 < 0 or player_loc[f"player_{turn}"][0]-5 < 0:
+        if player_loc[f"player_{turn}"][1]-3 < 0 or player_loc[f"player_{turn}"][1]-5 < 0:
             pass # age ziadi chap bashe o bere akhar radif
         else:
 
@@ -234,13 +234,6 @@ async def check_move(move):
                 await table_printer()
                 await take_action()
 
-
-
-
-
-
-
-
         elif table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]-3 , player_loc[f"player_{turn}"][1]-1 , turn )
             update_player_location(player_loc[f"player_{turn}"][0]-2 , player_loc[f"player_{turn}"][1])
@@ -266,6 +259,18 @@ async def check_move(move):
         elif (table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] != [0]) and (table[player_loc[f"player_{turn}"][0]+2][player_loc[f"player_{turn}"][1]-1] == [1]):
             Console.print("ahmagh posht player divare ! nemitoni ke", style="red")
             return False
+        elif (table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] != [0]) and not table[player_loc[f"player_{turn}"][0]+2][player_loc[f"player_{turn}"][1]-1] == [1] :
+            if player_loc[f"player_{turn}"][0]+1 > 17 or player_loc[f"player_{turn}"][0]+2 > 17:
+                Console.print("akoskhol az in balatar nemitoni beri !", style="red")
+                return False
+            else:
+                update_move_actions(player_loc[f"player_{turn}"][0]+3 , player_loc[f"player_{turn}"][1]-1 , turn )
+                update_player_location(player_loc[f"player_{turn}"][0]+4 , player_loc[f"player_{turn}"][1])
+                swap_turn()
+                Console.print("Move Anjam Shod! !", style="blue")
+                await table_printer()
+                await take_action()
+
         elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]+1 , player_loc[f"player_{turn}"][1]-1 , turn )
             update_player_location(player_loc[f"player_{turn}"][0]+2 , player_loc[f"player_{turn}"][1])
@@ -281,12 +286,23 @@ async def check_move(move):
         if player_loc[f"player_{turn}"][1] == 17: 
             Console.print("az in rast tar nemitoni beri!", style="red")
             return False
-        elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] == [1]:
+        elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]] == [1]:
                 Console.print("koskhol divar jelote !", style="red")
                 return False
         elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] != [0]) and (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1]):
             Console.print("ahmagh jeloye player divare ! nemitoni ke", style="red")
             return False
+        elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] != [0]) and not table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1] :
+            if player_loc[f"player_{turn}"][1]+1 > 17 or player_loc[f"player_{turn}"][1]+2 > 17:
+                Console.print("akoskhol az in rast tar nemitoni beri !", style="red")
+                return False
+            else:
+                update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]+3 , turn )
+                update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]+4)
+                swap_turn()
+                Console.print("Move Anjam Shod! !", style="blue")
+                await table_printer()
+                await take_action()
         elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]+1 , turn )
             update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]+2)
@@ -295,7 +311,38 @@ async def check_move(move):
             await table_printer()
             await take_action()
 
-        
+
+
+
+
+    elif move == "LEFT":
+        if player_loc[f"player_{turn}"][1] == 1: 
+            Console.print("az in chap tar nemitoni beri!", style="red")
+            return False
+        elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-2] == [1]:
+                Console.print("koskhol divar poshtete !", style="red")
+                return False
+        elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] != [0]) and (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-4] == [1]):
+            Console.print("ahmagh posht player divare ! nemitoni ke", style="red")
+            return False
+        elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] != [0]) and not table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-4] == [1] :
+            if player_loc[f"player_{turn}"][1]-3 < 0 or player_loc[f"player_{turn}"][1]-4 < 0:
+                Console.print("akoskhol az in chap tar nemitoni beri !", style="red")
+                return False
+            else:
+                update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]-5 , turn )
+                update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]-4)
+                swap_turn()
+                Console.print("Move Anjam Shod! !", style="blue")
+                await table_printer()
+                await take_action()
+        elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-2] == [0]:
+            update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]-3 , turn )
+            update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]-2)
+            swap_turn()
+            Console.print("Move Anjam Shod! !", style="blue")
+            await table_printer()
+            await take_action()
 
 
 
