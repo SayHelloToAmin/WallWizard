@@ -2,6 +2,7 @@ import asyncio
 import random
 turn = 1
 from rich.console import Console
+from the_finnal_file import finall_task
 player_loc = {
 }
 Console = Console()
@@ -209,6 +210,11 @@ def swap_turn():
         turn = 1
 
 
+def check_winner():
+    return False if player_loc["player_1"][0] == 1 or player_loc["player_2"][0] == 17 else True
+
+
+
 
 async def check_move(move):
     global player_loc , turn , table
@@ -217,10 +223,10 @@ async def check_move(move):
             Console.print("nemitoni beri balatar !", style="red")
             return False
         elif table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [1]:
-                Console.print("koskhol divar jelote !", style="red")
+                Console.print("koskhol divar jelote !", style=" red ")
                 return False
         elif (table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0]) and table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1]:
-            Console.print("ahmagh posht player divare ! nemitoni ke", style="red")
+            Console.print("ahmagh posht player divare ! nemitoni ke", style=" red ")
             return False
         elif (table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0]) and not table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1] :
             if player_loc[f"player_{turn}"][0]-4 < 0 or player_loc[f"player_{turn}"][0]-5 < 0:
@@ -233,14 +239,17 @@ async def check_move(move):
                 Console.print("Move Anjam Shod! !", style="blue")
                 await table_printer()
                 await take_action()
-
         elif table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]-3 , player_loc[f"player_{turn}"][1]-1 , turn )
             update_player_location(player_loc[f"player_{turn}"][0]-2 , player_loc[f"player_{turn}"][1])
-            swap_turn()
-            Console.print("Move Anjam Shod! !", style="blue")
-            await table_printer()
-            await take_action()
+
+            if check_winner():
+                swap_turn()
+                Console.print("Move Anjam Shod! !", style="blue")
+                await table_printer()
+                await take_action()
+            else:
+                finall_task(player_loc[f"player_{turn}"][-1])
 
 
 
@@ -274,10 +283,13 @@ async def check_move(move):
         elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]+1 , player_loc[f"player_{turn}"][1]-1 , turn )
             update_player_location(player_loc[f"player_{turn}"][0]+2 , player_loc[f"player_{turn}"][1])
-            swap_turn()
-            Console.print("Move Anjam Shod! !", style="blue")
-            await table_printer()
-            await take_action()
+            if check_winner():
+                swap_turn()
+                Console.print("Move Anjam Shod! !", style="blue")
+                await table_printer()
+                await take_action()
+            else:
+                finall_task(player_loc[f"player_{turn}"][-1])
 
 
 
@@ -294,7 +306,7 @@ async def check_move(move):
             return False
         elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] != [0]) and not table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1] :
             if player_loc[f"player_{turn}"][1]+1 > 17 or player_loc[f"player_{turn}"][1]+2 > 17:
-                Console.print("akoskhol az in rast tar nemitoni beri !", style="red")
+                Console.print("koskhol az in rast tar nemitoni beri !", style="red")
                 return False
             else:
                 update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]+3 , turn )
@@ -306,11 +318,13 @@ async def check_move(move):
         elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]+1 , turn )
             update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]+2)
-            swap_turn()
-            Console.print("Move Anjam Shod! !", style="blue")
-            await table_printer()
-            await take_action()
-
+            if check_winner():
+                swap_turn()
+                Console.print("Move Anjam Shod! !", style="blue")
+                await table_printer()
+                await take_action()
+            else:
+                finall_task(player_loc[f"player_{turn}"][-1])
 
 
 
@@ -339,10 +353,14 @@ async def check_move(move):
         elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-2] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]-3 , turn )
             update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]-2)
-            swap_turn()
-            Console.print("Move Anjam Shod! !", style="blue")
-            await table_printer()
-            await take_action()
+            if check_winner():
+                swap_turn()
+                Console.print("Move Anjam Shod! !", style="blue")
+                await table_printer()
+                await take_action()
+            else:
+                finall_task(player_loc[f"player_{turn}"][-1])
+
 
 
 
@@ -383,7 +401,7 @@ async def take_action():
             print("----------------------------------------------------------")
             print(f"now its your turn {player_loc["player_1"][-1] +"🔴" if turn == 1 else player_loc["player_2"][-1]+"🔵"}")
     move = input("Enter What You Want To Do! m For Move / w For Wall : ").lower()
-    while True:
+    while check_winner():
         if move == "m":
             await lets_move()
         elif move == "w":
