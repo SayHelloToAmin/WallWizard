@@ -403,7 +403,7 @@ async def check_move(move):
                 Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
                 return False
         else:
-            if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] == [1] and table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1]:
+            if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] != [0] and table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]] == [1]:
                     Console.print("Divar Jelote !", style="red")
                     return False
@@ -420,7 +420,7 @@ async def check_move(move):
                         await take_action()
                     else:
                         finall_task(player_loc[f"player_{turn}"][-1])
-            elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] == [1] and table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1]:
+            elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [1]:
                     Console.print("Divar Jelote ! ", style="red")
                     return False
