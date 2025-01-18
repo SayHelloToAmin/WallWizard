@@ -1,5 +1,5 @@
 from signupandlogin import login, sign_up
-from menu import menu
+from menu import menuu
 from rich.console import Console
 from rich.panel import Panel
 
@@ -12,7 +12,7 @@ def main():
             title="[bold cyan]🎮 WallWizard 🎮[/bold cyan]",
             subtitle="[italic bold magenta]Let the magic begin![/italic bold magenta]",
             border_style="cyan",
-            padding=(1, 2),
+            padding=(1, 2)
         )
 
         console.print(panel, "\n")
@@ -26,7 +26,7 @@ def main():
         elif choice == '2':
             user = login()
             if user:
-                menu(user)
+                menuu(user)
         else:
             console.print(Panel("Invalid option! Please try again.", style="bold red"))
 

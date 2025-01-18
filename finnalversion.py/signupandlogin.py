@@ -7,7 +7,7 @@ import bcrypt
 import re
 console = Console()
 import json
-user_file = 'Users.json'
+user_file = 'finnalversion.py/Users.json'
 
 
 # Chcek if username is valid or not
@@ -49,7 +49,7 @@ def check_email(email):
     return re.match(email_regex, email) is not None
 #----------------------------------------------
 
-#To change the password from normal form to hash form
+#To change the password from normal form to hashed form
 def hash_password(password):
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
@@ -74,27 +74,29 @@ def save_user(user_data):
 
 # Sign-Up Function
 def sign_up():
-    print("\n")
+    console.print("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" , style="bold yellow")
     console.print(Panel("*Sign up*", style="bold italic yellow"))
 
-    while True:
-        console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
-        choice = input()
-        if choice.lower() == 'b':
-            return
-        
 
-        console.print("Username (Enter 'b' to go back to the main): ", style="bold white")
+    console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")
+    choice = input()
+    if choice.lower() == 'b':
+        return
+        
+    while True:
+        console.print("Enter Your Username (Enter 'b' to go back to the main): ", style="bold white")
         username = input()
+        if not username:
+            console.print(Panel("Username Cannot Be Empty !", style="bold red"))
         if username.lower() == "b":
             return
         if user_exists(username):  # exist => True, not exist => False
-            console.print(Panel("Username or email has already been used!", style="bold red"))
+            console.print(Panel("Username has already been used!", style="bold red"))
         else:
             break
 
     while True:
-        console.print("Password (at least 8 characters, Enter 'b' to go back to the main): ", style="bold white")
+        console.print("Password (at least 8 characters, Enter 'b' to go back to the main menu): ", style="bold white")
         password = input()
         if password.lower() == "b":
             return
@@ -122,7 +124,9 @@ def sign_up():
         'id': user_id,
         'username': username,
         'password': hashed_password,
-        'email': email
+        'email': email,
+        "games" : 0,
+        "wins" : 0
     }
 
     save_user(user_data)
@@ -135,7 +139,7 @@ def sign_up():
 
 #Login Function
 def login():
-    print("\n")
+    console.print("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" , style="bold yellow")
     console.print(Panel("*Login*", style="bold italic yellow"))
     while True:
         console.print("Enter 'b' to go back to the main.\nIf you want to continue, click on enter: ", style="bold white")

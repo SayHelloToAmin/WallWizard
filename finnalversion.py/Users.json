@@ -1,0 +1,18 @@
+[
+    {
+        "id": "041a2b69-f8a6-45cb-8a30-2c7993fbfbd1",
+        "username": "khode amin",
+        "password": "$2b$12$MYednzIP0rc.4zfRTd65A.qdMjkdB8W1IRLJs6jWDlbO3EEUYp036",
+        "email": "taaa1799@gmail.com",
+        "games": 0,
+        "wins": 0
+    },
+    {
+        "id": "f2ca1e2f-eee3-4eff-979f-2b72ee083dd3",
+        "username": "erfan",
+        "password": "$2b$12$upDIqUQ28zO7DvPFJenqBOZujs3MyvBD/sXMTMuuSmrwezr4bihmK",
+        "email": "tddd@gmail.com",
+        "games": 0,
+        "wins": 0
+    }
+]
