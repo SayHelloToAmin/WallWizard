@@ -14,5 +14,13 @@
         "email": "tddd@gmail.com",
         "games": 2,
         "wins": 1
+    },
+    {
+        "id": "709ebdbe-a706-45bb-a4f1-980a0583a588",
+        "username": "ehsan",
+        "password": "$2b$12$J/mlKn18RE2qs8neg8KUC.bfLgklN7mDwrtHtvbNd8CQn1.XsDq/W",
+        "email": "ehsan@gmail.com",
+        "games": 2,
+        "wins": 1
     }
 ]
