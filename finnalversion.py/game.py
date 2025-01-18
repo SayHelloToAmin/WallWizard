@@ -277,24 +277,24 @@ async def check_move(move):
     global player_loc , turn , table
     if move == "w":
         if turn == 2 and player_loc["player_2"][0] == 1:
-            Console.print("nemitoni beri balatar !", style="red")
+            Console.print("You can't go higher than this!", style="red")
             return False
         elif table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [1]:
-                Console.print("koskhol divar jelote !", style=" red ")
+                Console.print("The wall is ahead!", style=" red ")
                 return False
         elif (table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0]) and table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1]:
-            Console.print("ahmagh posht player divare ! nemitoni ke", style=" red ")
+            Console.print("There's a wall behind the player! You can't.", style=" red ")
             return False
         elif (table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0]) and not table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1] :
             if player_loc[f"player_{turn}"][0]-4 < 0 or player_loc[f"player_{turn}"][0]-5 < 0:
-                Console.print("akoskhol az in balatar nemitoni beri !", style="red")
+                Console.print("You can't go higher than this!", style="red")
                 return False
             else:
                 update_move_actions(player_loc[f"player_{turn}"][0]-5 , player_loc[f"player_{turn}"][1]-1 , turn )
                 update_player_location(player_loc[f"player_{turn}"][0]-4 , player_loc[f"player_{turn}"][1])
             if check_winner():
                 swap_turn()
-                Console.print("Move Anjam Shod! !", style="blue")
+                Console.print("The move was made.", style="blue")
                 await table_printer()
                 await take_action()
             else:
@@ -305,7 +305,7 @@ async def check_move(move):
 
             if check_winner():
                 swap_turn()
-                Console.print("Move Anjam Shod! !", style="blue")
+                Console.print("The move was made.", style="blue")
                 await table_printer()
                 await take_action()
             else:
@@ -320,24 +320,24 @@ async def check_move(move):
 
     elif move == "s":
         if turn == 1 and player_loc["player_1"][0] == 17:
-            Console.print("nemitoni beri paiin tar !", style="red")
+            Console.print("You can't go any lower than this!", style="red")
             return False
         elif table[player_loc[f"player_{turn}"][0]][player_loc[f"player_{turn}"][1]-1] == [1]:
-            Console.print("koskhol divar poshtete !", style="red")
+            Console.print("There is a wall behind you!", style="red")
             return False
         elif (table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] != [0]) and (table[player_loc[f"player_{turn}"][0]+2][player_loc[f"player_{turn}"][1]-1] == [1]):
-            Console.print("ahmagh posht player divare ! nemitoni ke", style="red")
+            Console.print("There's a wall behind the player! You can't.", style="red")
             return False
         elif (table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] != [0]) and not table[player_loc[f"player_{turn}"][0]+2][player_loc[f"player_{turn}"][1]-1] == [1] :
             if player_loc[f"player_{turn}"][0]+1 > 17 or player_loc[f"player_{turn}"][0]+2 > 17:
-                Console.print("akoskhol az in balatar nemitoni beri !", style="red")
+                Console.print("You can't go higher than this!", style="red")
                 return False
             else:
                 update_move_actions(player_loc[f"player_{turn}"][0]+3 , player_loc[f"player_{turn}"][1]-1 , turn )
                 update_player_location(player_loc[f"player_{turn}"][0]+4 , player_loc[f"player_{turn}"][1])
             if check_winner():
                 swap_turn()
-                Console.print("Move Anjam Shod! !", style="blue")
+                Console.print("The move was made.", style="blue")
                 await table_printer()
                 await take_action()
             else:
@@ -348,7 +348,7 @@ async def check_move(move):
             update_player_location(player_loc[f"player_{turn}"][0]+2 , player_loc[f"player_{turn}"][1])
             if check_winner():
                 swap_turn()
-                Console.print("Move Anjam Shod! !", style="blue")
+                Console.print("The move was made.", style="blue")
                 await table_printer()
                 await take_action()
             else:
@@ -362,27 +362,27 @@ async def check_move(move):
             Console.print("az in rast tar nemitoni beri!", style="red")
             return False
         elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]] == [1]:
-                Console.print("koskhol divar jelote !", style="red")
+                Console.print("The wall is ahead!", style="red")
                 return False
         elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] != [0]) and (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1]):
-            Console.print("ahmagh jeloye player divare ! nemitoni ke", style="red")
+            Console.print("There is a wall in front of the player! You can't.", style="red")
             return False
         elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] != [0]) and not table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1] :
             if player_loc[f"player_{turn}"][1]+1 > 17 or player_loc[f"player_{turn}"][1]+2 > 17:
-                Console.print("koskhol az in rast tar nemitoni beri !", style="red")
+                Console.print("You can't go any further right than this.", style="red")
                 return False
             else:
                 update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]+3 , turn )
                 update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]+4)
                 swap_turn()
-                Console.print("Move Anjam Shod! !", style="blue")
+                Console.print("The move was made.", style="blue")
                 await table_printer()
                 await take_action()
         elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]+1 , turn )
             update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]+2)
             swap_turn()
-            Console.print("Move Anjam Shod! !", style="blue")
+            Console.print("The move was made.", style="blue")
             await table_printer()
             await take_action()
 
@@ -392,30 +392,30 @@ async def check_move(move):
 
     elif move == "a":
         if player_loc[f"player_{turn}"][1] == 1: 
-            Console.print("az in chap tar nemitoni beri!", style="red")
+            Console.print("You can't go any further left than this.", style="red")
             return False
         elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-2] == [1]:
-                Console.print("koskhol divar poshtete !", style="red")
+                Console.print("There is a wall behind you!", style="red")
                 return False
         elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] != [0]) and (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-4] == [1]):
-            Console.print("ahmagh posht player divare ! nemitoni ke", style="red")
+            Console.print("There's a wall behind the player! You can't.", style="red")
             return False
         elif (table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] != [0]) and not table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-4] == [1] :
             if player_loc[f"player_{turn}"][1]-3 < 0 or player_loc[f"player_{turn}"][1]-4 < 0:
-                Console.print("akoskhol az in chap tar nemitoni beri !", style="red")
+                Console.print("You can't go any further left than this.", style="red")
                 return False
             else:
                 update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]-5 , turn )
                 update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]-4)
                 swap_turn()
-                Console.print("Move Anjam Shod! !", style="blue")
+                Console.print("The move was made.", style="blue")
                 await table_printer()
                 await take_action()
         elif table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-2] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]-1 , player_loc[f"player_{turn}"][1]-3 , turn )
             update_player_location(player_loc[f"player_{turn}"][0] , player_loc[f"player_{turn}"][1]-2)
             swap_turn()
-            Console.print("Move Anjam Shod! !", style="blue")
+            Console.print("The move was made.", style="blue")
             await table_printer()
             await take_action()
 
@@ -425,51 +425,51 @@ async def check_move(move):
 
     elif move == "e":
         if player_loc[f"player_{turn}"][0] <= 2 or player_loc[f"player_{turn}"][1] >= 16:
-            Console.print("Shoma mojaz be anjam in move nistid !", style="red")
+            Console.print("You are not allowed to do this!", style="red")
             return False
         #check out of table moves :
         elif player_loc[f"player_{turn}"][0] == 3 and player_loc[f"player_{turn}"][1] == 15:
-            Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+            Console.print("You are not allowed to do this!", style="red")
             return False
         elif player_loc[f"player_{turn}"][0] == 3 :
             if table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] == [1]:
-                Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                Console.print("You are not allowed to do this!", style="red")
                 return False
         elif player_loc[f"player_{turn}"][1] == 15 :
             if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] == [1]:
-                Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                Console.print("You are not allowed to do this!", style="red")
                 return False
         else:
             if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] != [0] and table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]] == [1]:
-                    Console.print("Divar Jelote !", style="red")
+                    Console.print("The wall is ahead!", style="red")
                     return False
                 elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]+1] == [1]:
-                    Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                    Console.print("You are not allowed to do this!", style="red")
                     return False
                 else:
                     update_move_actions(player_loc[f"player_{turn}"][0]-3 , player_loc[f"player_{turn}"][1]+1 , turn )
                     update_player_location(player_loc[f"player_{turn}"][0]-2 , player_loc[f"player_{turn}"][1]+2)
                     if check_winner():
                         swap_turn()
-                        Console.print("Move Anjam Shod! !", style="blue")
+                        Console.print("The move was made.", style="blue")
                         await table_printer()
                         await take_action()
                     else:
                         finishthegame()
             elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [1]:
-                    Console.print("Divar Jelote ! ", style="red")
+                    Console.print("The wall is ahead! ", style="red")
                     return False
                 elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]+1] == [1]:
-                    Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                    Console.print("You are not allowed to do this!", style="red")
                     return False
                 else:
                     update_move_actions(player_loc[f"player_{turn}"][0]-3 , player_loc[f"player_{turn}"][1]+1 , turn )
                     update_player_location(player_loc[f"player_{turn}"][0]-2 , player_loc[f"player_{turn}"][1]+2)
                     if check_winner():
                         swap_turn()
-                        Console.print("Move Anjam Shod! !", style="blue")
+                        Console.print("The move was made.", style="blue")
                         await table_printer()
                         await take_action()
                     else:
@@ -482,52 +482,52 @@ async def check_move(move):
 
     elif move == "q":
         if player_loc[f"player_{turn}"][0] <= 2 or player_loc[f"player_{turn}"][1] <= 2:
-            Console.print("Shoma mojaz be anjam in move nistid !", style="red")
+            Console.print("You are not allowed to do this!", style="red")
             return False
         #check out of table moves :
         elif player_loc[f"player_{turn}"][0] == 3 and player_loc[f"player_{turn}"][1] == 3:
-            Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+            Console.print("You are not allowed to do this!", style="red")
             return False
         elif player_loc[f"player_{turn}"][0] == 3 :
             if table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] == [1]:
-                Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                Console.print("You are not allowed to do this!", style="red")
                 return False
         elif player_loc[f"player_{turn}"][1] == 3 :
             if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] == [1]:
-                Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                Console.print("You are not allowed to do this!", style="red")
                 return False
 
         else: 
             if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] != [0] and table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-4] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-2] == [1]:
-                    Console.print("Divar Jelote !", style="red")
+                    Console.print("The wall is ahead!", style="red")
                     return False
                 elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-3] == [1]:
-                    Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                    Console.print("You are not allowed to do this!", style="red")
                     return False
                 else:
                     update_move_actions(player_loc[f"player_{turn}"][0]-3 , player_loc[f"player_{turn}"][1]-3 , turn )
                     update_player_location(player_loc[f"player_{turn}"][0]-2 , player_loc[f"player_{turn}"][1]-2)
                     if check_winner():
                         swap_turn()
-                        Console.print("Move Anjam Shod! !", style="blue")
+                        Console.print("The move was made.", style="blue")
                         await table_printer()
                         await take_action()
                     else:
                         finishthegame()
             elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [1]:
-                    Console.print("Divar Jelote ! ", style="red")
+                    Console.print("The wall is ahead! ", style="red")
                     return False
                 elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-3] == [1]:
-                    Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                    Console.print("You are not allowed to do this!", style="red")
                     return False
                 else:
                     update_move_actions(player_loc[f"player_{turn}"][0]-3 , player_loc[f"player_{turn}"][1]-3 , turn )
                     update_player_location(player_loc[f"player_{turn}"][0]-2 , player_loc[f"player_{turn}"][1]-2)
                     if check_winner():
                         swap_turn()
-                        Console.print("Move Anjam Shod! !", style="blue")
+                        Console.print("The move was made.", style="blue")
                         await table_printer()
                         await take_action()
                     else:
@@ -541,52 +541,52 @@ async def check_move(move):
 
     elif move == "z":
         if player_loc[f"player_{turn}"][0] >= 16 or player_loc[f"player_{turn}"][1] <= 2:
-            Console.print("Shoma mojaz be anjam in move nistid !", style="red")
+            Console.print("You are not allowed to do this!", style="red")
             return False
         #check out of table moves :
         elif player_loc[f"player_{turn}"][0] == 3 and player_loc[f"player_{turn}"][1] == 15:
-            Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+            Console.print("You are not allowed to do this!", style="red")
             return False
         elif player_loc[f"player_{turn}"][0] == 15 :
             if table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] == [1]:
-                Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                Console.print("You are not allowed to do this!", style="red")
                 return False
         elif player_loc[f"player_{turn}"][1] == 3 :
             if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] == [1]:
-                Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                Console.print("You are not allowed to do this!", style="red")
                 return False
 
         else: 
             if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-3] != [0] and table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-4] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]-2] == [1]:
-                    Console.print("Divar Jelote !", style="red")
+                    Console.print("The wall is ahead!", style="red")
                     return False
                 elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-3] == [1]:
-                    Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                    Console.print("You are not allowed to do this!", style="red")
                     return False
                 else:
                     update_move_actions(player_loc[f"player_{turn}"][0]+1 , player_loc[f"player_{turn}"][1]-3 , turn )
                     update_player_location(player_loc[f"player_{turn}"][0]+2 , player_loc[f"player_{turn}"][1]-2)
                     if check_winner():
                         swap_turn()
-                        Console.print("Move Anjam Shod! !", style="blue")
+                        Console.print("The move was made.", style="blue")
                         await table_printer()
                         await take_action()
                     else:
                         finishthegame()
             elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]+2][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]][player_loc[f"player_{turn}"][1]-1] == [1]:
-                    Console.print("Divar Jelote ! ", style="red")
+                    Console.print("The wall is ahead! ", style="red")
                     return False
                 elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-3] == [1]:
-                    Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                    Console.print("You are not allowed to do this!", style="red")
                     return False
                 else:
                     update_move_actions(player_loc[f"player_{turn}"][0]+1 , player_loc[f"player_{turn}"][1]-3 , turn )
                     update_player_location(player_loc[f"player_{turn}"][0]+2 , player_loc[f"player_{turn}"][1]-2)
                     if check_winner():
                         swap_turn()
-                        Console.print("Move Anjam Shod! !", style="blue")
+                        Console.print("The move was made.", style="blue")
                         await table_printer()
                         await take_action()
                     else:
@@ -594,51 +594,51 @@ async def check_move(move):
 
     elif move == "c":
         if player_loc[f"player_{turn}"][0] >= 16 or player_loc[f"player_{turn}"][1] >= 16:
-            Console.print("Shoma mojaz be anjam in move nistid !", style="red")
+            Console.print("You are not allowed to do this!", style="red")
             return False
         #check out of table moves :
         elif player_loc[f"player_{turn}"][0] == 15 and player_loc[f"player_{turn}"][1] == 15:
-            Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+            Console.print("You are not allowed to do this!", style="red")
             return False
         elif player_loc[f"player_{turn}"][0] == 15 :
             if table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] == [1]:
-                Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                Console.print("You are not allowed to do this!", style="red")
                 return False
         elif player_loc[f"player_{turn}"][1] == 15 :
             if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] == [1]:
-                Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                Console.print("You are not allowed to do this!", style="red")
                 return False
         else:
             if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+1] != [0] and table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]+2] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-1][player_loc[f"player_{turn}"][1]] == [1]:
-                    Console.print("Divar Jelote !", style="red")
+                    Console.print("a wall is ahead!", style="red")
                     return False
                 elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]+1] == [1]:
-                    Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                    Console.print("You are not allowed to do this!", style="red")
                     return False
                 else:
                     update_move_actions(player_loc[f"player_{turn}"][0]+1 , player_loc[f"player_{turn}"][1]+1 , turn )
                     update_player_location(player_loc[f"player_{turn}"][0]+2 , player_loc[f"player_{turn}"][1]+2)
                     if check_winner():
                         swap_turn()
-                        Console.print("Move Anjam Shod! !", style="blue")
+                        Console.print("The move was made.", style="blue")
                         await table_printer()
                         await take_action()
                     else:
                         finishthegame()
             elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]+2][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]][player_loc[f"player_{turn}"][1]-1] == [1]:
-                    Console.print("Divar Jelote ! ", style="red")
+                    Console.print("The wall is ahead! ", style="red")
                     return False
                 elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]+1] == [1]:
-                    Console.print("shoma mojaz be anjam in move nistid ! ", style="red")
+                    Console.print("You are not allowed to do this!", style="red")
                     return False
                 else:
                     update_move_actions(player_loc[f"player_{turn}"][0]+1 , player_loc[f"player_{turn}"][1]+1 , turn )
                     update_player_location(player_loc[f"player_{turn}"][0]+2 , player_loc[f"player_{turn}"][1]+2)
                     if check_winner():
                         swap_turn()
-                        Console.print("Move Anjam Shod! !", style="blue")
+                        Console.print("The move was made.", style="blue")
                         await table_printer()
                         await take_action()
                     else:
@@ -649,13 +649,13 @@ async def check_wall(x , y , direction):
     secondryx = x - 1
     secondryy = 17 - y
     if (x % 2 != 0) or (y % 2 != 0):
-        Console.print("x ya y shoma nemitavanad fard bashad ", style="red")
+        Console.print("Your X or Y cannot be even!", style="red")
         return False
     if direction == "v" and ((table[secondryy][secondryx] != [0] ) or (table[secondryy-1][secondryx] != [0] ) or (table[secondryy+1][secondryx] != [0] )):
-        Console.print("ghablan inja divar gozashte shode ast !", style="red")
+        Console.print("A wall has already been built in this place!", style="red")
         return False
     elif direction == "h" and ((table[secondryy][secondryx] != [0] ) or (table[secondryy][secondryx+1] != [0] ) or (table[secondryy][secondryx-1] != [0] )):
-        Console.print("ghablan inja divar gozashte shode ast !", style="red")
+        Console.print("A wall has already been built in this place!", style="red")
         return False
     else:
         if direction == "v":
@@ -671,7 +671,7 @@ async def check_wall(x , y , direction):
         else:
             player_2_walls -= 1
         swap_turn()
-        Console.print("Divar Gozashte Shod !", style="blue")
+        Console.print("The wall was built!", style="blue")
         await table_printer()
         await take_action()
     
@@ -691,7 +691,7 @@ async def lets_move():
             if await check_move(move):
                 break
             else:
-                move = input("Pas Dobare Entekhab Kon Koja Mikhay Beri ? (W , S , A , D , Q , E , Z , C) : ").lower()
+                move = input("So choose again where you want to go? (W , S , A , D , Q , E , Z , C) : ").lower()
         else:
             Console.print("Your Choice Is Not Valid ! Try Again (W , S , A , D , Q , E , Z , C) : ", style="red")
             move = input()
@@ -701,35 +701,35 @@ async def place_wall():
     Console.print("- - - - - - - - - - - -", style="cyan")
     while True:
         while True:
-                x = input("x divar ro entekhab kon (2 ≤ x ≤ 16) :")
+                x = input("Please select the horizontal component of the wall. (2 ≤ x ≤ 16) :")
                 if x.isdigit():
                     x = int(x)
                     if x >= 2 and x <= 16:
                         break
                     else:
-                        Console.print("kos maghz goftam beyn 2 ta 16 bashe ", style="red")
+                        Console.print("Please enter a number between 2 and 16!", style="red")
                 else:
-                    Console.print("Goftam ye adad vared kon !", style="red")
+                    Console.print("Please enter only the number as input.", style="red")
         while True:
-            y = input("y divar ro entekhab kon (2 ≤ y ≤ 16):")
+            y = input("Select the vertical component of the wall. (2 ≤ y ≤ 16):")
             if y.isdigit():
                 y = int(y)
                 if y >= 2 and y <= 16:
                     break
                 else:
-                    Console.print("kos maghz goftam beyn 2 ta 16 bashe ", style="red")
+                    Console.print("Please enter a number between 2 and 16! ", style="red")
             else:
-                Console.print("Goftam ye adad vared kon !", style="red")
+                Console.print("Please enter only numbers as input.", style="red")
         while True:
-            direction = input("Jahat divar ro entekhab kon (H Or V) : ").lower()
+            direction = input("Choose the direction of the wall. (H Or V) : ").lower()
             if direction in ["h" , "v"]:
                 break
             else:
-                Console.print("az jahat haye drost estefade kon !", style="red")
+                Console.print("Use the correct terms vertical and horizontal.", style="red")
         if await check_wall(x , y , direction):
             break
         else:
-            Console.print("pas yek mokhtasat dige ro entekhab kon !", style="red")
+            Console.print("So choose another coordinate.", style="red")
 
             
 
@@ -756,7 +756,7 @@ async def take_action():
                 Console.print("hich divari baraye estefade nadari !", style="red bold")
 
         else:
-            Console.print("Your Choice Is Not Valid ! Try Again (m For Move / w For Wall) : ", style="red")
+            Console.print("Your Choice Is Not Valid ! Try Again (m For Move / w For Wall)(Save for save and exit!) : ", style="red")
             move = input()
 
 
