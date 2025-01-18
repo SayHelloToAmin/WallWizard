@@ -2,9 +2,10 @@ import asyncio
 import random
 import time 
 turn = 1
+from datetime import datetime
 from rich.console import Console
 from the_finnal_file import finall_task
-from save_game import take_table , p1walls , p2walls , loc1 , loc2 , savethegame , gettime
+from save_game import take_table , p1walls , p2walls , loc1 , loc2 , savethegame 
 player_loc = {
 }
 player_1_walls = 0
@@ -13,7 +14,7 @@ Console = Console()
 from rich.panel import Panel
 
 
-gameid = None
+gameid = 0
 
 table = []
 
@@ -178,7 +179,29 @@ def delete_yellows():
                 table[row][radif] = [0]
 
 
-
+def finishthegame():
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+    dictionary = {
+    "player1_username": player_loc["player_1"][-1],
+    "player2_username": player_loc["player_2"][-1],
+    "p1walls": player_1_walls,
+    "p2walls": player_2_walls,
+    "player1_position": player_loc["player_1"][:-1],
+    "player2_position": player_loc["player_2"][:-1],
+    "table": table,
+    "current_turn": f"{player_loc["player_1"][-1] if turn == 1 else player_loc["player_2"][-1]}",
+    "timer": round(time.time(),2),
+    "game_result": "Finished",
+    "date" : formatted_time
+    }
+    savethegame(gameid , dictionary)
+    winner = player_loc[f"player_{turn}"][-1]
+    if turn == 1:
+        loser = player_loc["player_2"][-1]
+    else:
+        loser = player_loc["player_1"][-1]
+    finall_task(winner , loser)
 
 
 
@@ -275,7 +298,7 @@ async def check_move(move):
                 await table_printer()
                 await take_action()
             else:
-                finall_task(player_loc[f"player_{turn}"][-1])
+                finishthegame()
         elif table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]-3 , player_loc[f"player_{turn}"][1]-1 , turn )
             update_player_location(player_loc[f"player_{turn}"][0]-2 , player_loc[f"player_{turn}"][1])
@@ -286,7 +309,7 @@ async def check_move(move):
                 await table_printer()
                 await take_action()
             else:
-                finall_task(player_loc[f"player_{turn}"][-1])
+                finishthegame()
 
 
 
@@ -318,7 +341,7 @@ async def check_move(move):
                 await table_printer()
                 await take_action()
             else:
-                finall_task(player_loc[f"player_{turn}"][-1])
+                finishthegame()
 
         elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] == [0]:
             update_move_actions(player_loc[f"player_{turn}"][0]+1 , player_loc[f"player_{turn}"][1]-1 , turn )
@@ -329,7 +352,7 @@ async def check_move(move):
                 await table_printer()
                 await take_action()
             else:
-                finall_task(player_loc[f"player_{turn}"][-1])
+                finishthegame()
 
 
 
@@ -433,7 +456,7 @@ async def check_move(move):
                         await table_printer()
                         await take_action()
                     else:
-                        finall_task(player_loc[f"player_{turn}"][-1])
+                        finishthegame()
             elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [1]:
                     Console.print("Divar Jelote ! ", style="red")
@@ -450,7 +473,7 @@ async def check_move(move):
                         await table_printer()
                         await take_action()
                     else:
-                        finall_task(player_loc[f"player_{turn}"][-1])
+                        finishthegame()
 
 
 
@@ -491,7 +514,7 @@ async def check_move(move):
                         await table_printer()
                         await take_action()
                     else:
-                        finall_task(player_loc[f"player_{turn}"][-1])
+                        finishthegame()
             elif table[player_loc[f"player_{turn}"][0]-3][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]-4][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]-2][player_loc[f"player_{turn}"][1]-1] == [1]:
                     Console.print("Divar Jelote ! ", style="red")
@@ -508,7 +531,7 @@ async def check_move(move):
                         await table_printer()
                         await take_action()
                     else:
-                        finall_task(player_loc[f"player_{turn}"][-1])
+                        finishthegame()
 
 
 
@@ -550,7 +573,7 @@ async def check_move(move):
                         await table_printer()
                         await take_action()
                     else:
-                        finall_task(player_loc[f"player_{turn}"][-1])
+                        finishthegame()
             elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]+2][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]][player_loc[f"player_{turn}"][1]-1] == [1]:
                     Console.print("Divar Jelote ! ", style="red")
@@ -567,7 +590,7 @@ async def check_move(move):
                         await table_printer()
                         await take_action()
                     else:
-                        finall_task(player_loc[f"player_{turn}"][-1])
+                        finishthegame()
 
     elif move == "c":
         if player_loc[f"player_{turn}"][0] >= 16 or player_loc[f"player_{turn}"][1] >= 16:
@@ -602,7 +625,7 @@ async def check_move(move):
                         await table_printer()
                         await take_action()
                     else:
-                        finall_task(player_loc[f"player_{turn}"][-1])
+                        finishthegame()
             elif table[player_loc[f"player_{turn}"][0]+1][player_loc[f"player_{turn}"][1]-1] != [0] and table[player_loc[f"player_{turn}"][0]+2][player_loc[f"player_{turn}"][1]-1] == [1]:
                 if table[player_loc[f"player_{turn}"][0]][player_loc[f"player_{turn}"][1]-1] == [1]:
                     Console.print("Divar Jelote ! ", style="red")
@@ -619,7 +642,7 @@ async def check_move(move):
                         await table_printer()
                         await take_action()
                     else:
-                        finall_task(player_loc[f"player_{turn}"][-1])
+                        finishthegame()
 
 async def check_wall(x , y , direction):
     global player_2_walls , player_1_walls
@@ -688,7 +711,7 @@ async def place_wall():
                 else:
                     Console.print("Goftam ye adad vared kon !", style="red")
         while True:
-            y = input("y divar ro entekhab kon (2 ≤ y ≤ 16) :")
+            y = input("y divar ro entekhab kon (2 ≤ y ≤ 16):")
             if y.isdigit():
                 y = int(y)
                 if y >= 2 and y <= 16:
@@ -714,6 +737,7 @@ async def place_wall():
 
 first_time = True
 async def take_action():
+    global gameid
     if first_time:
             print("----------------------------------------------------------")
             print(f"now its your turn {player_loc["player_1"][-1] +"🔴" if turn == 1 else player_loc["player_2"][-1]+"🔵"}")
@@ -739,28 +763,32 @@ async def take_action():
 
 
 def save_the_game(gameid):
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
     dictionary = {
     "player1_username": player_loc["player_1"][-1],
-    "player2_username": player_loc["player_1"][-1],
+    "player2_username": player_loc["player_2"][-1],
     "p1walls": player_1_walls,
     "p2walls": player_2_walls,
     "player1_position": player_loc["player_1"][:-1],
     "player2_position": player_loc["player_2"][:-1],
     "table": table,
     "current_turn": f"{player_loc["player_1"][-1] if turn == 1 else player_loc["player_2"][-1]}",
-    "time": round(time.time() - gettime(gameid)),
+    "timer": round(time.time(),2),
     "game_result": "In Progress",
+    "date": formatted_time
     }
 
-    save_the_game(dictionary)
+    savethegame(gameid , dictionary)
     Console.print(Panel("Your Game Has Been Saved ! Bye ", style="bold red"))
+    quit()
 
 async def table_creator(gameid):
     global table
     table = take_table(gameid)
 
 
-async def start_the_game(pusername1 , pusername2,gameidd):
+async def start_the_game(pusername1 , pusername2, gameidd):
     global table , player_loc , turn,first_time , player_1_walls , player_2_walls , gameid
     gameid = gameidd
     player_1_walls = p1walls(gameid)

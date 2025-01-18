@@ -4,6 +4,9 @@ from rich.panel import Panel
 from rich.box import ROUNDED
 import json
 from list_games import list_games
+from save_game import give_me_dict , give_me_game_dict
+from rich.text import Text
+
 
 console = Console()
 games_file = 'games_data.json'
@@ -44,73 +47,46 @@ def display_menu():
     console.print(table)
 
 def display_game_history(user):
-    user_games = list_games(user['username'])
-    if not user_games:
-        console.print(Panel("No history found!", style="bold red"))
-        return
+    games = give_me_game_dict()
+    game_records = games[-5:]
 
-    table = Table(title="Game History", show_lines=True)
-    table.add_column("Game ID", style="cyan")
-    table.add_column("Players", style="magenta")
-    table.add_column("Status", style="green")
+    for game in game_records:
 
-    for game in user_games:
-        table.add_row(game['game_id'], f"{game['player1_username']} vs {game['player2_username']}", game['game_result'])
+        table = Table(show_header=True, header_style="bold cyan")
+        table.add_column("Field", style="dim")
+        table.add_column("Value", style="bold")
 
-    console.print(table)
+        table.add_row("Game ID", game["game_id"])
+        table.add_row("Player 1", game["player1_username"])
+        table.add_row("Player 2", game["player2_username"])
+        table.add_row("P1 Walls", str(game["p1walls"]))
+        table.add_row("P2 Walls", str(game["p2walls"]))
+        table.add_row("P1 Position", str(game["player1_position"]))
+        table.add_row("P2 Position", str(game["player2_position"]))
+        table.add_row("Current Turn", game["current_turn"])
+        table.add_row("Timer", str(game["timer"]))
+        table.add_row("Game Result", game["game_result"])
+        table.add_row("Date", game["date"])
+
+        panel_title = Text(f"Game History: {game['game_id']}", style="bold green")
+        panel = Panel(table, title=panel_title, border_style="bright_yellow")
+
+        console.print(panel)
+    console.print("Press Enter To Back!...", style="green")
+    input()
+    return
 
 def display_leaderboard():
-    try:
-        with open(games_file, 'r') as file:
-            games = json.load(file)
-    except FileNotFoundError:
-        console.print(Panel("No results found!", style="bold red"))
-        return
-
-    leaderboard = {}
-    
-    for game in games:
-        for player in [game['player1_username'], game['player2_username']]:
-            if player not in leaderboard:
-                leaderboard[player] = {
-                    'wins': 0,
-                    'losses': 0,
-                    'total_time': 0
-                }
-            
-            if game['game_result'] == 'Player 1 Wins' and game['player1_username'] == player:
-                leaderboard[player]['wins'] += 1
-            elif game['game_result'] == 'Player 1 Wins' and game['player2_username'] == player:
-                leaderboard[player]['losses'] += 1
-            elif game['game_result'] == 'Player 2 Wins' and game['player2_username'] == player:
-                leaderboard[player]['wins'] += 1
-            elif game['game_result'] == 'Player 2 Wins' and game['player1_username'] == player:
-                leaderboard[player]['losses'] += 1
-
-            leaderboard[player]['total_time'] += game.get('time_spent', 0)
-
-    leaderboard_data = []
-    for player, stats in leaderboard.items():
-        leaderboard_data.append({
-            'username': player,
-            'wins': stats['wins'],
-            'losses': stats['losses'],
-            'total_time': stats['total_time']
-        })
-
-    with open('leaderboard.json', 'w') as file:
-        json.dump(leaderboard_data, file, indent=4)
-
-    sorted_leaderboard = sorted(leaderboard_data, key=lambda x: (x['wins'], -x['total_time']), reverse=True)
-
-    table = Table(title="Leaderboard")
-    table.add_column("Rank", style="cyan")
-    table.add_column("Player", style="magenta")
-    table.add_column("Wins", style="green")
-    table.add_column("Losses", style="red")
-    table.add_column("Total Time (s)", style="yellow")
-
-    for idx, player in enumerate(sorted_leaderboard[:3]):
-        table.add_row(str(idx + 1), player['username'], str(player['wins']), str(player['losses']), str(player['total_time']))
-
+    data = give_me_dict()
+    sorted_data = sorted(data, key=lambda x: x['wins'], reverse=True)
+    table = Table(title="Players Sorted by Wins")
+    table.add_column("Username", justify="center")
+    table.add_column("Email", justify="center")
+    table.add_column("Games Played", justify="center")
+    table.add_column("Wins", justify="center")
+    for player in sorted_data:
+        table.add_row(player['username'], player['email'], str(player['games']), str(player['wins']))
     console.print(table)
+    console.print("Press Enter To Back!...", style="green")
+    input()
+    return

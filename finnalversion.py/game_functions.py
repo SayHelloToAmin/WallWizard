@@ -54,7 +54,7 @@ def start_new_game(user,menu):
             ],
             "table" : table,
             "current_turn": "amin",
-            "time" : time.time(),
+            "timer" : time.time(),
             "game_result": "In Progress"
         })
 

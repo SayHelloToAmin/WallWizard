@@ -1,6 +1,6 @@
 import json
 games_file = 'finnalversion.py/games_data.json'
-
+users_file = 'finnalversion.py/Users.json'
 
 
 
@@ -57,7 +57,7 @@ def gettime(game_id):
         games = []
     for dict in games:
         if dict["game_id"] == game_id:
-            return dict["time"]
+            return dict["timer"]
 
 
 
@@ -93,12 +93,53 @@ def savethegame(game_id , gamedata):
         if game["game_id"] == game_id:
             game.update(gamedata) 
             break
-    with open("updated_data.json", "w") as f:
+    with open(games_file, "w") as f:
         json.dump(games, f, indent=4)
 
+def add_games(username):
+    try:
+        with open(users_file, 'r') as file:
+            users = json.load(file)
+    except FileNotFoundError:
+        users = []
+    for user in users:
+        if user["username"] == username:
+            user["games"] += 1
+            break
+    with open(users_file, "w") as file:
+        json.dump(users, file, indent=4)
+
+def add_wins(username):
+    try:
+        with open(users_file, 'r') as file:
+            users = json.load(file)
+    except FileNotFoundError:
+        users = []
+    for user in users:
+        if user["username"] == username:
+            user["wins"] += 1
+            break
+    with open(users_file, "w") as file:
+        json.dump(users, file, indent=4)
 
 
 
+
+def give_me_dict():
+    try:
+        with open(users_file, 'r') as file:
+            users = json.load(file)
+    except FileNotFoundError:
+        users = []
+    return users
+
+def give_me_game_dict():
+    try:
+        with open(games_file, 'r') as file:
+            games = json.load(file)
+    except FileNotFoundError:
+        games = []
+    return games
 # def swap_turn():
 #     try:
 #         with open(games_file, 'r') as file:

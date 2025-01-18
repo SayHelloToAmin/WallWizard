@@ -14,7 +14,7 @@ def menuu(user):
         if choice == '1':
             start_new_game(user,menuu)
         # elif choice == '2':
-        #     continue_game(user)
+            # continue_game(user)
         elif choice == '3':
             display_game_history(user)
         elif choice == '4':
