@@ -1,7 +1,5 @@
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
-from rich.prompt import Prompt
 import uuid
 import bcrypt
 import re
@@ -24,7 +22,7 @@ def check_user(username):
 
 
 #Check if user already exist in database or not
-def user_exists(username, email=None):
+def user_exists(username=None, email=None):
     try:
         with open(user_file, 'r') as file:
             users = json.load(file)
@@ -38,7 +36,7 @@ def user_exists(username, email=None):
 
 
 # Check If Password Is Correct
-def check_password(hash_pass , password):
+def check_password(hash_pass, password):
     return bcrypt.checkpw(password.encode('utf-8'), hash_pass.encode('utf-8'))
 #----------------------------------------------
 
@@ -84,10 +82,13 @@ def sign_up():
         return
         
     while True:
-        console.print("Enter Your Username (Enter 'b' to go back to the main): ", style="bold white")
-        username = input()
-        if not username:
-            console.print(Panel("Username Cannot Be Empty !", style="bold red"))
+        while True:
+            console.print("Enter Your Username (Enter 'b' to go back to the main): ", style="bold white")
+            username = input()
+            if not username:
+                console.print(Panel("Username Cannot Be Empty !", style="bold red"))
+            else:
+                break
         if username.lower() == "b":
             return
         if user_exists(username):  # exist => True, not exist => False
@@ -112,7 +113,7 @@ def sign_up():
             return
         if not check_email(email):  # valid => True, not valid => False
             console.print(Panel("Email is not valid! Please try again.", style="bold red"))
-        elif user_exists(username, email): 
+        elif user_exists(email): 
             console.print(Panel("Email is already been used! Please enter a different email.", style="bold red"))
         else:
             break
@@ -132,9 +133,6 @@ def sign_up():
     save_user(user_data)
     console.print(Panel("Sign up was successful!", style="bold green"))
 #----------------------------------------------
-
-
-
 
 
 #Login Function

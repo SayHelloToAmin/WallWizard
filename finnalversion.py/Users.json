@@ -22,5 +22,29 @@
         "email": "ehsan@gmail.com",
         "games": 2,
         "wins": 1
+    },
+    {
+        "id": "7fdd3280-ca7a-4ca8-bc1c-3c56e05b3823",
+        "username": "reza",
+        "password": "$2b$12$AFJn7wR3KxXM9.8qsZ2HqugNc1npR0BuEvZwpv.LDJCpT5v.Iam.a",
+        "email": "erfan@gmail.com",
+        "games": 0,
+        "wins": 0
+    },
+    {
+        "id": "fc127203-9b18-4e4e-b0c0-721a542ab860",
+        "username": "mohsen",
+        "password": "$2b$12$Pjjume5.DeLbXBA0QYPqtuigj0eiqCi2y9G3yfqODjSNbMde8nS2y",
+        "email": "erfan@gmail.com",
+        "games": 0,
+        "wins": 0
+    },
+    {
+        "id": "8ef58948-cb92-40c6-b6c4-422f165dc1a3",
+        "username": "ali",
+        "password": "$2b$12$hgO5Boh9upjLiqtGnQ2ESe2MOXB7ULZ2NPKK66pfmacOfQGHqstWm",
+        "email": "ali@gmail.com",
+        "games": 0,
+        "wins": 0
     }
 ]
